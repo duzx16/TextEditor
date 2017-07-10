@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file alias="open_file">open.png</file>
+        <file alias="save_file">images/save.png</file>
+        <file alias="create_file">images/create.png</file>
+        <file alias="redo">images/redo.png</file>
+        <file alias="undo">images/undo.png</file>
+        <file alias="saveAs">images/saveAs.png</file>
+    </qresource>
+    <qresource prefix="/text">
+        <file alias="wordlist">wordlist.txt</file>
+    </qresource>
+</RCC>
