@@ -1,4 +1,4 @@
-#include "texteditor.h"
+#include "Texteditor.h"
 #include <QCompleter>
 #include <QKeyEvent>
 #include <QAbstractItemView>

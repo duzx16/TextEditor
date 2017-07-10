@@ -6,6 +6,9 @@
         <file alias="redo">images/redo.png</file>
         <file alias="undo">images/undo.png</file>
         <file alias="saveAs">images/saveAs.png</file>
+        <file alias="copy">images/copy.png</file>
+        <file alias="cut">images/cut.png</file>
+        <file alias="paste">images/paste.png</file>
     </qresource>
     <qresource prefix="/text">
         <file alias="wordlist">wordlist.txt</file>

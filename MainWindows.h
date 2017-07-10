@@ -1,7 +1,7 @@
 #ifndef TEXT_EDITOR_H
 #define TEXT_EDITOR_H
 
-#include "texteditor.h"
+#include "Texteditor.h"
 #include <QMainWindow>
 
 
@@ -28,7 +28,6 @@ protected:
 
     void closeEvent(QCloseEvent *event) override;
 
-    //覆盖这两个事件以便于自动补全的操作
 
 private:
     void createActions();
@@ -51,6 +50,10 @@ private:
     //编辑菜单的操作
     QAction *undoAction;
     QAction *redoAction;
+
+    QAction *cutAction;
+    QAction *copyAction;
+    QAction *pasteAction;
 
     //保存当前绑定的文件的路径
     QString curFileName;

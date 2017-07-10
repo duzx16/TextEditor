@@ -15,11 +15,13 @@ public:
     QCompleter *completer() const;
     ~TextEditor();
 protected:
+    //覆盖这两个时间以便于自动补全的实现
     void keyPressEvent(QKeyEvent *e) override;
     void focusInEvent(QFocusEvent *e) override;
 signals:
 
 private slots:
+    //用于实现插入自动不全的单词
     void insertCompletion(const QString &completion);
 private:
     QString textUnderCursor() const;

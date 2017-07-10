@@ -1,6 +1,6 @@
 #include <QApplication>
 #include <QStringListModel>
-#include "mainwindows.h"
+#include "MainWindows.h"
 #include <QModelIndex>
 #include <QAbstractItemModel>
 #include <QScrollBar>
@@ -119,6 +119,26 @@ void MainWindow::createActions()
     redoAction->setEnabled(false);
     connect(textEdit,&QTextEdit::redoAvailable,redoAction,&QAction::setEnabled);
 
+    cutAction=new QAction(QIcon(":/icons/cut"),tr("&Cut"),this);
+    cutAction->setShortcut(QKeySequence::Cut);
+    cutAction->setStatusTip(tr("Copies the selected text to the clipboard and deletes it from the edit."));
+    connect(cutAction,&QAction::triggered,textEdit,&QTextEdit::cut );
+    cutAction->setEnabled(false);
+    connect(textEdit,&QTextEdit::copyAvailable,cutAction,&QAction::setEnabled);
+
+    copyAction=new QAction(QIcon(":/icons/copy"),tr("&Copy"),this);
+    copyAction->setShortcut(QKeySequence::Copy);
+    copyAction->setStatusTip(tr("Copies the selected text to the clipboard."));
+    connect(copyAction,&QAction::triggered,textEdit,&QTextEdit::copy );
+    copyAction->setEnabled(false);
+    connect(textEdit,&QTextEdit::copyAvailable,copyAction,&QAction::setEnabled);
+
+    pasteAction=new QAction(QIcon(":/icons/paste"),tr("&Paste"),this);
+    pasteAction->setShortcut(QKeySequence::Paste);
+    pasteAction->setStatusTip(tr("Pastes the text from the clipboard into the text edit at the current cursor position."));
+    connect(pasteAction,&QAction::triggered,textEdit,&QTextEdit::paste);
+
+
 
 }
 
@@ -133,6 +153,10 @@ void MainWindow::createMenus()
     editMenu=menuBar()->addMenu(tr("&Edit"));
     editMenu->addAction(undoAction);
     editMenu->addAction(redoAction);
+    editMenu->addSeparator();
+    editMenu->addAction(cutAction);
+    editMenu->addAction(copyAction);
+    editMenu->addAction(pasteAction);
 }
 
 void MainWindow::createToolBars()
