@@ -21,6 +21,7 @@
 #include <QCloseEvent>
 #include <QCompleter>
 #include <QMenuBar>
+#include <QToolBar>
 
 MainWindow::MainWindow(QWidget *parent):QMainWindow(parent)
 {
@@ -44,7 +45,7 @@ MainWindow::MainWindow(QWidget *parent):QMainWindow(parent)
     textEdit->setCompleter(completer);
     setCentralWidget(textEdit);
     resize(800, 600);
-    setWindowTitle(tr("Text Editor [*]"));
+    setWindowTitle(tr("Text Editor[*]"));
 
 }
 QAbstractItemModel *MainWindow::modelFromFile(const QString& fileName)
@@ -161,7 +162,19 @@ void MainWindow::createMenus()
 
 void MainWindow::createToolBars()
 {
+    //文件工具栏
+    fileBar=addToolBar("&File");
+    fileBar->addAction(createFileAction);
+    fileBar->addAction(openFileAction);
+    fileBar->addAction(saveFileAction);
 
+    //编辑工具栏
+    editBar=addToolBar("&Edit");
+    editBar->addAction(undoAction);
+    editBar->addAction(redoAction);
+    editBar->addAction(cutAction);
+    editBar->addAction(copyAction);
+    editBar->addAction(pasteAction);
 }
 
 void MainWindow::createFile()

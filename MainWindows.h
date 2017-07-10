@@ -4,7 +4,7 @@
 #include "Texteditor.h"
 #include <QMainWindow>
 
-
+class QToolBar;
 
 class MainWindow : public QMainWindow
 {
@@ -55,6 +55,9 @@ private:
     QAction *copyAction;
     QAction *pasteAction;
 
+    //工具栏
+    QToolBar *fileBar;
+    QToolBar *editBar;
     //保存当前绑定的文件的路径
     QString curFileName;
     //用于实现自动补全的类
