@@ -3,7 +3,8 @@
 
 #include <QWidget>
 #include <QTextEdit>
-#include <QCompleter>
+
+class QCompleter;
 
 class TextEditor : public QTextEdit
 {

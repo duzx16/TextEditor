@@ -9,6 +9,10 @@
         <file alias="copy">images/copy.png</file>
         <file alias="cut">images/cut.png</file>
         <file alias="paste">images/paste.png</file>
+        <file alias="bold">images/bold.png</file>
+        <file alias="italic">images/italic.png</file>
+        <file alias="underline">images/underline.png</file>
+        <file alias="selectall">images/copyall.png</file>
     </qresource>
     <qresource prefix="/text">
         <file alias="wordlist">wordlist.txt</file>

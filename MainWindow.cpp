@@ -23,6 +23,11 @@
 #include <QMenuBar>
 #include <QToolBar>
 #include <QDebug>
+#include <QLabel>
+#include <QToolButton>
+#include <QComboBox>
+#include <QFontComboBox>
+#include <QFontDatabase>
 
 MainWindow::MainWindow(QWidget *parent):QMainWindow(parent)
 {
@@ -31,6 +36,7 @@ MainWindow::MainWindow(QWidget *parent):QMainWindow(parent)
     textEdit=new TextEditor(this);
     connect(textEdit->document(),&QTextDocument::modificationChanged,this,&MainWindow::setWindowModified);
 
+    createButtons();
     createActions();
     createMenus();
     createToolBars();
@@ -81,7 +87,32 @@ MainWindow::~MainWindow()
 
 }
 
+void MainWindow::createButtons()
+{
+    fontLabel=new QLabel(tr("Font:"));
+    fontBox=new QFontComboBox;
+    fontBox->setFontFilters(QFontComboBox::ScalableFonts);
 
+    sizeLabel=new QLabel(tr("Size:"));
+    sizeBox=new QComboBox;
+    QFontDatabase db;
+    foreach (int size, db.standardSizes()) {
+        sizeBox->addItem(QString::number(size));
+    }
+
+    boldButton=new QToolButton;
+    boldButton->setIcon(QIcon(":/icons/bold"));
+    boldButton->setCheckable(true);
+
+    italicButton=new QToolButton;
+    italicButton->setIcon(QIcon(":/icons/italic"));
+    italicButton->setCheckable(true);
+
+    underlineButton=new QToolButton;
+    underlineButton->setIcon(QIcon(":/icons/underline"));
+    underlineButton->setCheckable(true);
+
+}
 
 void MainWindow::createActions()
 {
@@ -140,6 +171,11 @@ void MainWindow::createActions()
     pasteAction->setStatusTip(tr("Pastes the text from the clipboard into the text edit at the current cursor position."));
     connect(pasteAction,&QAction::triggered,textEdit,&QTextEdit::paste);
 
+    selectallAction=new QAction(QIcon(":/icons/selectall"),tr("&Select all"),this);
+    selectallAction->setShortcut(QKeySequence::SelectAll);
+    selectallAction->setStatusTip(tr("Select the whole document"));
+    connect(selectallAction,&QAction::triggered,textEdit,&QTextEdit::selectAll);
+
 
 
 }
@@ -159,6 +195,8 @@ void MainWindow::createMenus()
     editMenu->addAction(cutAction);
     editMenu->addAction(copyAction);
     editMenu->addAction(pasteAction);
+    editMenu->addSeparator();
+    editMenu->addAction(selectallAction);
 }
 
 void MainWindow::createToolBars()
@@ -176,6 +214,16 @@ void MainWindow::createToolBars()
     editBar->addAction(cutAction);
     editBar->addAction(copyAction);
     editBar->addAction(pasteAction);
+
+    //字体工具栏
+    fontBar=addToolBar("&Font");
+    fontBar->addWidget(fontLabel);
+    fontBar->addWidget(fontBox);
+    fontBar->addWidget(sizeLabel);
+    fontBar->addWidget(sizeBox);
+    fontBar->addWidget(boldButton);
+    fontBar->addWidget(italicButton);
+    fontBar->addWidget(underlineButton);
 }
 
 void MainWindow::createFile()

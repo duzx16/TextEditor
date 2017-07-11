@@ -5,6 +5,11 @@
 #include <QMainWindow>
 
 class QToolBar;
+class QToolButton;
+class QAbstractItemModel;
+class QLabel;
+class QFontComboBox;
+class QComboBox;
 
 class MainWindow : public QMainWindow
 {
@@ -17,6 +22,7 @@ public:
     ~MainWindow();
 private slots:
 protected:
+    //文件菜单函数的具体实现
     void openFile();
     void saveFile();
     void createFile();
@@ -33,6 +39,7 @@ private:
     void createActions();
     void createMenus();
     void createToolBars();
+    void createButtons();
 
     QString textUnderCursor() const;
 
@@ -54,10 +61,23 @@ private:
     QAction *cutAction;
     QAction *copyAction;
     QAction *pasteAction;
+    QAction *selectallAction;
 
     //工具栏
     QToolBar *fileBar;
     QToolBar *editBar;
+    QToolBar *fontBar;
+
+    //工具栏上不是动作的东西
+    //字体
+    QLabel *fontLabel;
+    QFontComboBox *fontBox;
+    QLabel *sizeLabel;
+    QComboBox *sizeBox;
+    QToolButton *boldButton;
+    QToolButton *italicButton;
+    QToolButton *underlineButton;
+    QToolButton *colorButton;
     //保存当前绑定的文件的路径
     QString curFileName;
     //用于实现自动补全的类
