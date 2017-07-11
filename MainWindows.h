@@ -10,6 +10,7 @@ class QAbstractItemModel;
 class QLabel;
 class QFontComboBox;
 class QComboBox;
+class QTextCharFormat;
 
 class MainWindow : public QMainWindow
 {
@@ -28,18 +29,21 @@ protected:
     void createFile();
     void saveAsFile();
 
-
-    void loadFile(const QString &filename);
-    void serialFile(const QString &filename);
-
     void closeEvent(QCloseEvent *event) override;
-
-
+signals:
+    void fontBoldChanged(bool) const;
+private slots:
+    void changeFontToolBar(const QTextCharFormat &format);
 private:
+    //创建GUI中的具体元素
     void createActions();
     void createMenus();
     void createToolBars();
     void createButtons();
+
+    //两个负责具体实现的底层函数
+    void loadFile(const QString &filename);
+    void serialFile(const QString &filename);
 
     QString textUnderCursor() const;
 

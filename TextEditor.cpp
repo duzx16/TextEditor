@@ -7,10 +7,12 @@
 #include <QModelIndex>
 #include <QAbstractItemModel>
 #include <QScrollBar>
+#include <QTextCharFormat>
 
 TextEditor::TextEditor(QWidget *parent)
 : QTextEdit(parent), c(0)
 {
+    setFontPointSize(14);
 }
 
 TextEditor::~TextEditor()
@@ -108,5 +110,15 @@ void TextEditor::keyPressEvent(QKeyEvent *e)
     cr.setWidth(c->popup()->sizeHintForColumn(0)
                 + c->popup()->verticalScrollBar()->sizeHint().width());
     c->complete(cr); // popup it up!
+}
+
+void TextEditor::setFontSize(const QString &size)
+{
+    setFontPointSize(size.toFloat());
+}
+
+void TextEditor::setFontBold(bool checked)
+{
+    setFontWeight(checked?QFont::Bold:QFont::Normal);
 }
 

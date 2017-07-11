@@ -92,25 +92,34 @@ void MainWindow::createButtons()
     fontLabel=new QLabel(tr("Font:"));
     fontBox=new QFontComboBox;
     fontBox->setFontFilters(QFontComboBox::ScalableFonts);
+    connect(fontBox,SIGNAL(activated(QString)),textEdit,SLOT(setFontFamily(QString)));
 
     sizeLabel=new QLabel(tr("Size:"));
     sizeBox=new QComboBox;
+    sizeBox->setEditable(true);
     QFontDatabase db;
     foreach (int size, db.standardSizes()) {
         sizeBox->addItem(QString::number(size));
     }
+    connect(sizeBox,SIGNAL(activated(QString)),textEdit,SLOT(setFontSize(QString)));
 
     boldButton=new QToolButton;
     boldButton->setIcon(QIcon(":/icons/bold"));
     boldButton->setCheckable(true);
+    connect(boldButton,SIGNAL(clicked(bool)),textEdit,SLOT(setFontBold(bool)));
 
     italicButton=new QToolButton;
     italicButton->setIcon(QIcon(":/icons/italic"));
     italicButton->setCheckable(true);
+    connect(italicButton,SIGNAL(clicked(bool)),textEdit,SLOT(setFontItalic(bool)));
 
     underlineButton=new QToolButton;
     underlineButton->setIcon(QIcon(":/icons/underline"));
     underlineButton->setCheckable(true);
+    connect(underlineButton,SIGNAL(clicked(bool)),textEdit,SLOT(setFontUnderline(bool)));
+
+    changeFontToolBar(textEdit->currentCharFormat());
+    connect(textEdit,SIGNAL(currentCharFormatChanged(QTextCharFormat)),this,SLOT(changeFontToolBar(QTextCharFormat)));
 
 }
 
@@ -317,6 +326,16 @@ void MainWindow::serialFile(const QString &filename)
     setWindowModified(false);
 }
 
+//用于在光标所在处的格式发生变化时更改字体工具栏的函数
+void MainWindow::changeFontToolBar(const QTextCharFormat &format)
+{
+    fontBox->setCurrentFont(format.font());
+    qDebug()<<format.fontPointSize();
+    sizeBox->setCurrentText(QString::number(format.fontPointSize()));
+    boldButton->setChecked(format.font().bold());
+    italicButton->setChecked(format.fontItalic());
+    underlineButton->setChecked(format.fontUnderline());
+}
 
 
 QString MainWindow::textUnderCursor() const
