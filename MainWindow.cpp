@@ -22,6 +22,7 @@
 #include <QCompleter>
 #include <QMenuBar>
 #include <QToolBar>
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent):QMainWindow(parent)
 {
@@ -180,6 +181,7 @@ void MainWindow::createToolBars()
 void MainWindow::createFile()
 {
     MainWindow *newText=new MainWindow(this->parentWidget());
+    newText->setAttribute(Qt::WA_DeleteOnClose);
     newText->show();
 }
 
@@ -191,6 +193,7 @@ void MainWindow::openFile()
         if(!curFileName.isEmpty()||!textEdit->document()->isEmpty())
         {
             MainWindow *newText=new MainWindow(this->parentWidget());
+            newText->setAttribute(Qt::WA_DeleteOnClose);
             newText->show();
             newText->loadFile(path);
 
