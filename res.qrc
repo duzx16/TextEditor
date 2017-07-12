@@ -14,6 +14,10 @@
         <file alias="underline">images/underline.png</file>
         <file alias="selectall">images/copyall.png</file>
         <file alias="fontcolor">images/fontcolor.png</file>
+        <file alias="centeralign">images/center.png</file>
+        <file alias="justifyalign">images/justify.png</file>
+        <file alias="leftalign">images/left.png</file>
+        <file alias="rightalign">images/right.png</file>
     </qresource>
     <qresource prefix="/text">
         <file alias="wordlist">wordlist.txt</file>

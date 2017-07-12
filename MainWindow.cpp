@@ -28,6 +28,7 @@
 #include <QComboBox>
 #include <QFontComboBox>
 #include <QFontDatabase>
+#include <QActionGroup>
 
 MainWindow::MainWindow(QWidget *parent):QMainWindow(parent)
 {
@@ -103,27 +104,7 @@ void MainWindow::createButtons()
     }
     connect(sizeBox,SIGNAL(activated(QString)),textEdit,SLOT(setFontSize(QString)));
 
-    boldButton=new QToolButton;
-    boldButton->setIcon(QIcon(":/icons/bold"));
-    boldButton->setCheckable(true);
-    connect(boldButton,SIGNAL(clicked(bool)),textEdit,SLOT(setFontBold(bool)));
 
-    italicButton=new QToolButton;
-    italicButton->setIcon(QIcon(":/icons/italic"));
-    italicButton->setCheckable(true);
-    connect(italicButton,SIGNAL(clicked(bool)),textEdit,SLOT(setFontItalic(bool)));
-
-    underlineButton=new QToolButton;
-    underlineButton->setIcon(QIcon(":/icons/underline"));
-    underlineButton->setCheckable(true);
-    connect(underlineButton,SIGNAL(clicked(bool)),textEdit,SLOT(setFontUnderline(bool)));
-
-    fontColorButton=new QToolButton;
-    fontColorButton->setIcon(QIcon(":./icons/fontcolor"));
-    connect(fontColorButton,SIGNAL(clicked(bool)),textEdit,SLOT(setFontColor()));
-
-    changeFontToolBar(textEdit->currentCharFormat());
-    connect(textEdit,SIGNAL(currentCharFormatChanged(QTextCharFormat)),this,SLOT(changeFontToolBar(QTextCharFormat)));
 
 }
 
@@ -189,7 +170,38 @@ void MainWindow::createActions()
     selectallAction->setStatusTip(tr("Select the whole document"));
     connect(selectallAction,&QAction::triggered,textEdit,&QTextEdit::selectAll);
 
+    //添加格式菜单的操作
+    boldAction=new QAction(QIcon(":/icons/bold"),tr("&Bold"),this);
+    boldAction->setCheckable(true);
+    connect(boldAction,SIGNAL(triggered(bool)),textEdit,SLOT(setFontBold(bool)));
 
+    italicAction=new QAction(QIcon(":/icons/italic"),tr("&Italic"),this);
+    italicAction->setCheckable(true);
+    connect(italicAction,SIGNAL(triggered(bool)),textEdit,SLOT(setFontItalic(bool)));
+
+    underlineAction=new QAction(QIcon(":/icons/underline"),tr("&Underline"),this);
+    underlineAction->setCheckable(true);
+    connect(underlineAction,SIGNAL(triggered(bool)),textEdit,SLOT(setFontUnderline(bool)));
+
+    fontColorAction=new QAction(QIcon(":./icons/fontcolor"),tr("&Font Color"),this);
+    connect(fontColorAction,SIGNAL(triggered(bool)),textEdit,SLOT(setFontColor()));
+
+    changeFontAction(textEdit->currentCharFormat());
+    connect(textEdit,SIGNAL(currentCharFormatChanged(QTextCharFormat)),this,SLOT(changeFontAction(QTextCharFormat)));
+
+    alignGroup=new QActionGroup(this);
+
+    leftAlignAction=new QAction(QIcon(":/icons/leftalign"),tr("&Left Align"),alignGroup);
+    leftAlignAction->setCheckable(true);
+    rightAlignAction=new QAction(QIcon(":/icons/rightalign"),tr("&Right Align"),alignGroup);
+    rightAlignAction->setCheckable(true);
+    centerAlignAction=new QAction(QIcon(":/icons/centeralign"),tr("&Center Align"),alignGroup);
+    centerAlignAction->setCheckable(true);
+    justifyAlignAction=new QAction(QIcon(":/icons/justifyalign"),tr("&Justify Align"),alignGroup);
+    justifyAlignAction->setCheckable(true);
+    connect(alignGroup,SIGNAL(triggered(QAction*)),this,SLOT(setBlockAlign(QAction*)));
+    connect(textEdit,SIGNAL(cursorPositionChanged()),this,SLOT(changeAlignAction()));
+    leftAlignAction->setChecked(true);
 
 }
 
@@ -210,6 +222,14 @@ void MainWindow::createMenus()
     editMenu->addAction(pasteAction);
     editMenu->addSeparator();
     editMenu->addAction(selectallAction);
+
+    formatMenu=menuBar()->addMenu("&Format");
+    formatMenu->addAction(boldAction);
+    formatMenu->addAction(italicAction);
+    formatMenu->addAction(underlineAction);
+    formatMenu->addAction(fontColorAction);
+    formatMenu->addSeparator();
+    formatMenu->addActions(alignGroup->actions());
 }
 
 void MainWindow::createToolBars()
@@ -234,10 +254,14 @@ void MainWindow::createToolBars()
     fontBar->addWidget(fontBox);
     fontBar->addWidget(sizeLabel);
     fontBar->addWidget(sizeBox);
-    fontBar->addWidget(boldButton);
-    fontBar->addWidget(italicButton);
-    fontBar->addWidget(underlineButton);
-    fontBar->addWidget(fontColorButton);
+    fontBar->addAction(boldAction);
+    fontBar->addAction(italicAction);
+    fontBar->addAction(underlineAction);
+    fontBar->addAction(fontColorAction);
+
+    //段落格式工具栏
+    blockBar=addToolBar("&Block");
+    blockBar->addActions(alignGroup->actions());
 }
 
 void MainWindow::createFile()
@@ -332,13 +356,13 @@ void MainWindow::serialFile(const QString &filename)
 }
 
 //用于在光标所在处的格式发生变化时更改字体工具栏的函数
-void MainWindow::changeFontToolBar(const QTextCharFormat &format)
+void MainWindow::changeFontAction(const QTextCharFormat &format)
 {
     fontBox->setCurrentFont(format.font());
     sizeBox->setCurrentText(QString::number(format.fontPointSize()));
-    boldButton->setChecked(format.font().bold());
-    italicButton->setChecked(format.fontItalic());
-    underlineButton->setChecked(format.fontUnderline());
+    boldAction->setChecked(format.font().bold());
+    italicAction->setChecked(format.fontItalic());
+    underlineAction->setChecked(format.fontUnderline());
 }
 
 
@@ -347,6 +371,31 @@ QString MainWindow::textUnderCursor() const
     QTextCursor tc = textEdit->textCursor();
     tc.select(QTextCursor::WordUnderCursor);
     return tc.selectedText();
+}
+
+//设置段落对齐格式
+void MainWindow::setBlockAlign(QAction *aim)
+{
+    if(aim==leftAlignAction)
+        textEdit->setAlignment(Qt::AlignLeft);
+    else if(aim==rightAlignAction)
+        textEdit->setAlignment(Qt::AlignRight);
+    else if(aim==centerAlignAction)
+        textEdit->setAlignment(Qt::AlignCenter);
+    else if(aim==justifyAlignAction)
+        textEdit->setAlignment(Qt::AlignJustify);
+}
+
+void MainWindow::changeAlignAction()
+{
+   Qt::Alignment align=textEdit->alignment();
+   switch(align)
+   {
+   case Qt::AlignLeft:leftAlignAction->setChecked(true);break;
+   case Qt::AlignRight:rightAlignAction->setChecked(true);break;
+   case Qt::AlignCenter:centerAlignAction->setChecked(true);break;
+   case Qt::AlignJustify:justifyAlignAction->setChecked(true);break;
+   }
 }
 
 //覆盖事件

@@ -11,6 +11,7 @@ class QLabel;
 class QFontComboBox;
 class QComboBox;
 class QTextCharFormat;
+class QActionGroup;
 
 class MainWindow : public QMainWindow
 {
@@ -21,7 +22,9 @@ public:
     QAbstractItemModel *modelFromFile(const QString& fileName);
 
     ~MainWindow();
-private slots:
+public slots:
+    void setBlockAlign(QAction *aim);
+    void changeAlignAction();
 protected:
     //文件菜单函数的具体实现
     void openFile();
@@ -33,7 +36,7 @@ protected:
 signals:
     void fontBoldChanged(bool) const;
 private slots:
-    void changeFontToolBar(const QTextCharFormat &format);
+    void changeFontAction(const QTextCharFormat &format);
 private:
     //创建GUI中的具体元素
     void createActions();
@@ -51,6 +54,7 @@ private:
     //菜单
     QMenu *fileMenu;
     QMenu *editMenu;
+    QMenu *formatMenu;
 
     //文件菜单的操作
     QAction *createFileAction;
@@ -67,10 +71,23 @@ private:
     QAction *pasteAction;
     QAction *selectallAction;
 
+    //格式菜单的操作
+    QAction *boldAction;
+    QAction *italicAction;
+    QAction *underlineAction;
+    QAction *fontColorAction;
+
+    QActionGroup *alignGroup;
+    QAction *leftAlignAction;
+    QAction *rightAlignAction;
+    QAction *centerAlignAction;
+    QAction *justifyAlignAction;
+
     //工具栏
     QToolBar *fileBar;
     QToolBar *editBar;
     QToolBar *fontBar;
+    QToolBar *blockBar;
 
     //工具栏上不是动作的东西
     //字体
@@ -78,10 +95,6 @@ private:
     QFontComboBox *fontBox;
     QLabel *sizeLabel;
     QComboBox *sizeBox;
-    QToolButton *boldButton;
-    QToolButton *italicButton;
-    QToolButton *underlineButton;
-    QToolButton *fontColorButton;
     //保存当前绑定的文件的路径
     QString curFileName;
     //用于实现自动补全的类
