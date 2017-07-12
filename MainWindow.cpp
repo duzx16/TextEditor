@@ -1,36 +1,7 @@
 #include <QApplication>
 #include <QStringListModel>
 #include "MainWindows.h"
-#include <QModelIndex>
-#include <QAbstractItemModel>
-#include <QScrollBar>
-#include <QMainWindow>
-#include <QTextEdit>
-#include <QMenu>
-#include <QAction>
-#include <QTextDocument>
-#include <QString>
-#include <QKeySequence>
-#include <QFileDialog>
-#include <QFile>
-#include <QMessageBox>
-#include <QIODevice>
-#include <QTextStream>
-#include <QEvent>
-#include <QWidget>
-#include <QCloseEvent>
-#include <QCompleter>
-#include <QMenuBar>
-#include <QToolBar>
-#include <QDebug>
-#include <QLabel>
-#include <QToolButton>
-#include <QComboBox>
-#include <QFontComboBox>
-#include <QFontDatabase>
-#include <QActionGroup>
-#include <QTextCursor>
-#include <QTextList>
+#include <QtWidgets>
 
 MainWindow::MainWindow(QWidget *parent):QMainWindow(parent)
 {
@@ -39,13 +10,15 @@ MainWindow::MainWindow(QWidget *parent):QMainWindow(parent)
     textEdit=new TextEditor(this);
     connect(textEdit->document(),&QTextDocument::modificationChanged,this,&MainWindow::setWindowModified);
 
+    findDialog=new FindDialog(this);
+    connect(findDialog->findAction(),SIGNAL(clicked(bool)),this,SLOT(takeSearch()));
+
     createButtons();
     createActions();
     createMenus();
     createToolBars();
 
     statusBar();
-
 
     completer=new QCompleter(this);
     completer->setModel(modelFromFile(":/text/wordlist"));
@@ -183,6 +156,11 @@ void MainWindow::createActions()
     selectallAction->setStatusTip(tr("Select the whole document"));
     connect(selectallAction,&QAction::triggered,textEdit,&QTextEdit::selectAll);
 
+    findAction=new QAction(QIcon(":/icons/find"),tr("&Find"),this);
+    findAction->setShortcut(QKeySequence::Find);
+    findAction->setStatusTip(tr("Find and select the specific text"));
+    connect(findAction,SIGNAL(triggered(bool)),this,SLOT(showFindDialog()));
+
     //添加格式菜单的操作
     boldAction=new QAction(QIcon(":/icons/bold"),tr("&Bold"),this);
     boldAction->setCheckable(true);
@@ -217,6 +195,7 @@ void MainWindow::createActions()
     connect(textEdit,SIGNAL(cursorPositionChanged()),this,SLOT(changeAlignAction()));
     leftAlignAction->setChecked(true);
 
+    //TODO 把列表添加进来
 }
 
 void MainWindow::createMenus()
@@ -236,6 +215,7 @@ void MainWindow::createMenus()
     editMenu->addAction(pasteAction);
     editMenu->addSeparator();
     editMenu->addAction(selectallAction);
+    editMenu->addAction(findAction);
 
     formatMenu=menuBar()->addMenu("&Format");
     formatMenu->addAction(boldAction);
@@ -425,6 +405,21 @@ void MainWindow::changeLisBox()
     else
     {
         listBox->setCurrentIndex(0);
+    }
+}
+
+void MainWindow::showFindDialog()
+{
+    findDialog->show();
+}
+
+void MainWindow::takeSearch()
+{
+    QString aim=findDialog->searchContent();
+    findDialog->setLastSearch();
+    if(!textEdit->find(aim))
+    {
+        QMessageBox::information(this,tr("Find result"),tr("Can't find the given text"));
     }
 }
 

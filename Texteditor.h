@@ -4,7 +4,9 @@
 #include <QWidget>
 #include <QTextEdit>
 
+QT_BEGIN_NAMESPACE
 class QCompleter;
+QT_END_NAMESPACE
 
 class TextEditor : public QTextEdit
 {

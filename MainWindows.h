@@ -2,8 +2,10 @@
 #define TEXT_EDITOR_H
 
 #include "Texteditor.h"
+#include "FindDialog.h"
 #include <QMainWindow>
 
+QT_BEGIN_NAMESPACE
 class QToolBar;
 class QToolButton;
 class QAbstractItemModel;
@@ -12,6 +14,7 @@ class QFontComboBox;
 class QComboBox;
 class QTextCharFormat;
 class QActionGroup;
+QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow
 {
@@ -26,6 +29,8 @@ public slots:
     void setBlockAlign(QAction *aim);
     void changeAlignAction();
     void changeLisBox();
+    void showFindDialog();
+    void takeSearch();
 protected:
     //文件菜单函数的具体实现
     void openFile();
@@ -72,6 +77,8 @@ private:
     QAction *pasteAction;
     QAction *selectallAction;
 
+    QAction *findAction;
+
     //格式菜单的操作
     QAction *boldAction;
     QAction *italicAction;
@@ -103,6 +110,8 @@ private:
     QString curFileName;
     //用于实现自动补全的类
     QCompleter *completer;
+    //查找对话框
+    FindDialog *findDialog;
     //真正实现文本编辑器的类
     TextEditor *textEdit;
 

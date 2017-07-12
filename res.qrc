@@ -18,6 +18,7 @@
         <file alias="justifyalign">images/justify.png</file>
         <file alias="leftalign">images/left.png</file>
         <file alias="rightalign">images/right.png</file>
+        <file alias="find">images/find.png</file>
     </qresource>
     <qresource prefix="/text">
         <file alias="wordlist">wordlist.txt</file>

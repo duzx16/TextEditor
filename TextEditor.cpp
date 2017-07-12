@@ -1,18 +1,5 @@
 #include "Texteditor.h"
-#include <QCompleter>
-#include <QKeyEvent>
-#include <QAbstractItemView>
-#include <QtDebug>
-#include <QApplication>
-#include <QModelIndex>
-#include <QAbstractItemModel>
-#include <QScrollBar>
-#include <QTextCharFormat>
-#include <QColorDialog>
-#include <QTextBlock>
-#include <QTextListFormat>
-#include <QTextCursor>
-#include <QTextList>
+#include <QtWidgets>
 
 TextEditor::TextEditor(QWidget *parent)
 : QTextEdit(parent), c(0)
