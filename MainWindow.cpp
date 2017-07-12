@@ -29,6 +29,8 @@
 #include <QFontComboBox>
 #include <QFontDatabase>
 #include <QActionGroup>
+#include <QTextCursor>
+#include <QTextList>
 
 MainWindow::MainWindow(QWidget *parent):QMainWindow(parent)
 {
@@ -104,8 +106,19 @@ void MainWindow::createButtons()
     }
     connect(sizeBox,SIGNAL(activated(QString)),textEdit,SLOT(setFontSize(QString)));
 
-
-
+    listLabel=new QLabel(tr("List:"));
+    listBox=new QComboBox;
+    listBox->addItem("Standard");
+    listBox->addItem("Disc");
+    listBox->addItem("Circle");
+    listBox->addItem("Square");
+    listBox->addItem("Decimal");
+    listBox->addItem("LowerAlpha");
+    listBox->addItem("UpperAlpha");
+    listBox->addItem("LowerRoman");
+    listBox->addItem("UpperRoman");
+    connect(listBox,SIGNAL(activated(int)),textEdit,SLOT(setList(int)));
+    connect(textEdit,SIGNAL(cursorPositionChanged()),this,SLOT(changeLisBox()));
 }
 
 void MainWindow::createActions()
@@ -189,6 +202,7 @@ void MainWindow::createActions()
     changeFontAction(textEdit->currentCharFormat());
     connect(textEdit,SIGNAL(currentCharFormatChanged(QTextCharFormat)),this,SLOT(changeFontAction(QTextCharFormat)));
 
+    //用于表示对齐的动作
     alignGroup=new QActionGroup(this);
 
     leftAlignAction=new QAction(QIcon(":/icons/leftalign"),tr("&Left Align"),alignGroup);
@@ -262,6 +276,7 @@ void MainWindow::createToolBars()
     //段落格式工具栏
     blockBar=addToolBar("&Block");
     blockBar->addActions(alignGroup->actions());
+    blockBar->addWidget(listBox);
 }
 
 void MainWindow::createFile()
@@ -396,6 +411,21 @@ void MainWindow::changeAlignAction()
    case Qt::AlignCenter:centerAlignAction->setChecked(true);break;
    case Qt::AlignJustify:justifyAlignAction->setChecked(true);break;
    }
+}
+
+//在鼠标位置变化时更新列表选项框
+void MainWindow::changeLisBox()
+{
+    QTextCursor cursor=textEdit->textCursor();
+    QTextList *curList=cursor.currentList();
+    if(curList)
+    {
+        listBox->setCurrentIndex(-(curList->format().style()));
+    }
+    else
+    {
+        listBox->setCurrentIndex(0);
+    }
 }
 
 //覆盖事件

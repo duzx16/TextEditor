@@ -25,6 +25,7 @@ public:
 public slots:
     void setBlockAlign(QAction *aim);
     void changeAlignAction();
+    void changeLisBox();
 protected:
     //文件菜单函数的具体实现
     void openFile();
@@ -95,6 +96,9 @@ private:
     QFontComboBox *fontBox;
     QLabel *sizeLabel;
     QComboBox *sizeBox;
+    //段落
+    QLabel *listLabel;
+    QComboBox *listBox;
     //保存当前绑定的文件的路径
     QString curFileName;
     //用于实现自动补全的类

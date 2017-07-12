@@ -9,6 +9,10 @@
 #include <QScrollBar>
 #include <QTextCharFormat>
 #include <QColorDialog>
+#include <QTextBlock>
+#include <QTextListFormat>
+#include <QTextCursor>
+#include <QTextList>
 
 TextEditor::TextEditor(QWidget *parent)
 : QTextEdit(parent), c(0)
@@ -129,5 +133,36 @@ void TextEditor::setFontColor()
     if(color.isValid())
     {
         setTextColor(color);
+    }
+}
+
+void TextEditor::setList(int index)
+{
+    QTextCursor cursor=textCursor();
+    if(index>0&&index<9)
+    {
+        QTextListFormat::Style style=QTextListFormat::Style(-index);
+        cursor.beginEditBlock();
+        QTextBlockFormat blockFormat=cursor.blockFormat();
+        QTextListFormat listFormat;
+        if(cursor.currentList())
+        {
+            listFormat=cursor.currentList()->format();
+        }
+        else
+        {
+            listFormat.setIndent(blockFormat.indent()+1);
+        }
+        listFormat.setStyle(style);
+        cursor.createList(listFormat);
+        cursor.endEditBlock();
+    }
+    else
+    {
+        QTextList *curList=cursor.currentList();
+        if(curList&&!curList->isEmpty())
+        {
+            curList->remove(cursor.block());
+        }
     }
 }
