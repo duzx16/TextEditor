@@ -8,6 +8,7 @@
 #include <QAbstractItemModel>
 #include <QScrollBar>
 #include <QTextCharFormat>
+#include <QColorDialog>
 
 TextEditor::TextEditor(QWidget *parent)
 : QTextEdit(parent), c(0)
@@ -122,3 +123,11 @@ void TextEditor::setFontBold(bool checked)
     setFontWeight(checked?QFont::Bold:QFont::Normal);
 }
 
+void TextEditor::setFontColor()
+{
+    QColor color=QColorDialog::getColor(textColor(),this);
+    if(color.isValid())
+    {
+        setTextColor(color);
+    }
+}

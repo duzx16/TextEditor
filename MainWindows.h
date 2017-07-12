@@ -81,7 +81,7 @@ private:
     QToolButton *boldButton;
     QToolButton *italicButton;
     QToolButton *underlineButton;
-    QToolButton *colorButton;
+    QToolButton *fontColorButton;
     //保存当前绑定的文件的路径
     QString curFileName;
     //用于实现自动补全的类

@@ -13,6 +13,7 @@
         <file alias="italic">images/italic.png</file>
         <file alias="underline">images/underline.png</file>
         <file alias="selectall">images/copyall.png</file>
+        <file alias="fontcolor">images/fontcolor.png</file>
     </qresource>
     <qresource prefix="/text">
         <file alias="wordlist">wordlist.txt</file>

@@ -19,6 +19,7 @@ protected slots:
     //字体工具栏的具体实现
     void setFontSize(const QString &size);
     void setFontBold(bool checked);
+    void setFontColor();
 protected:
     //覆盖这两个时间以便于自动补全的实现
     void keyPressEvent(QKeyEvent *e) override;

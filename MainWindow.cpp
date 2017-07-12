@@ -118,6 +118,10 @@ void MainWindow::createButtons()
     underlineButton->setCheckable(true);
     connect(underlineButton,SIGNAL(clicked(bool)),textEdit,SLOT(setFontUnderline(bool)));
 
+    fontColorButton=new QToolButton;
+    fontColorButton->setIcon(QIcon(":./icons/fontcolor"));
+    connect(fontColorButton,SIGNAL(clicked(bool)),textEdit,SLOT(setFontColor()));
+
     changeFontToolBar(textEdit->currentCharFormat());
     connect(textEdit,SIGNAL(currentCharFormatChanged(QTextCharFormat)),this,SLOT(changeFontToolBar(QTextCharFormat)));
 
@@ -233,6 +237,7 @@ void MainWindow::createToolBars()
     fontBar->addWidget(boldButton);
     fontBar->addWidget(italicButton);
     fontBar->addWidget(underlineButton);
+    fontBar->addWidget(fontColorButton);
 }
 
 void MainWindow::createFile()
@@ -330,7 +335,6 @@ void MainWindow::serialFile(const QString &filename)
 void MainWindow::changeFontToolBar(const QTextCharFormat &format)
 {
     fontBox->setCurrentFont(format.font());
-    qDebug()<<format.fontPointSize();
     sizeBox->setCurrentText(QString::number(format.fontPointSize()));
     boldButton->setChecked(format.font().bold());
     italicButton->setChecked(format.fontItalic());
