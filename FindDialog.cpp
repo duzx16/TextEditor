@@ -66,9 +66,11 @@ void FindDialog::setLastSearch()
     lastSearch=lineEdit->text();
 }
 
+void FindDialog::clearLastSearch(){lastSearch.clear();}
+
 bool FindDialog::isNewSearch()
 {
-    return lineEdit->text()==lastSearch;
+    return lineEdit->text()!=lastSearch;
 }
 
 QString FindDialog::searchContent()

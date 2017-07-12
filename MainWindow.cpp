@@ -416,10 +416,36 @@ void MainWindow::showFindDialog()
 void MainWindow::takeSearch()
 {
     QString aim=findDialog->searchContent();
-    findDialog->setLastSearch();
-    if(!textEdit->find(aim))
+    bool findResult;
+    QTextDocument::FindFlags options=QTextDocument::FindFlags();
+    if(findDialog->fromStart()&&findDialog->isNewSearch())
+        textEdit->moveCursor(QTextCursor::Start);
+    if(findDialog->backward())
+        options|=QTextDocument::FindBackward;
+    if(findDialog->useReg())
+    {
+        Qt::CaseSensitivity cs=Qt::CaseInsensitive;
+        if(findDialog->caseCheck())
+            cs=Qt::CaseSensitive;
+        QRegExp exp(aim,cs);
+        findResult=textEdit->find(exp,options);
+    }
+    else
+    {
+        if(findDialog->wholeWords())
+        options|=QTextDocument::FindWholeWords;
+        if(findDialog->caseCheck())
+            options|=QTextDocument::FindCaseSensitively;
+        findResult=textEdit->find(aim,options);
+    }
+    if(!findResult)
     {
         QMessageBox::information(this,tr("Find result"),tr("Can't find the given text"));
+        findDialog->clearLastSearch();
+    }
+    else
+    {
+        findDialog->setLastSearch();
     }
 }
 

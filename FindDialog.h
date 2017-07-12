@@ -19,6 +19,7 @@ class FindDialog : public QDialog
 public:
     FindDialog(QWidget *parent=0);
     void setLastSearch();
+    void clearLastSearch();
     bool isNewSearch();
     QString searchContent();
     bool fromStart();
