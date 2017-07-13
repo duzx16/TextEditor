@@ -13,6 +13,7 @@ FindDialog::FindDialog(QWidget *parent):QDialog(parent)
 
     findButton=new QPushButton(tr("&Find"),this);
     findButton->setDefault(true);
+    connect(findButton,&QPushButton::clicked,this,&FindDialog::find);
 
     moreButton=new QPushButton(tr("&More"),this);
     moreButton->setCheckable(true);

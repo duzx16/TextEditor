@@ -11,7 +11,7 @@ MainWindow::MainWindow(QWidget *parent):QMainWindow(parent)
     connect(textEdit->document(),&QTextDocument::modificationChanged,this,&MainWindow::setWindowModified);
 
     findDialog=new FindDialog(this);
-    connect(findDialog->findAction(),SIGNAL(clicked(bool)),this,SLOT(takeSearch()));
+    connect(findDialog,SIGNAL(find()),this,SLOT(takeSearch()));
 
     insertTableDialog=new InsertTableDialog(this);
     connect(insertTableDialog,SIGNAL(accepted()),this,SLOT(insertTable()));

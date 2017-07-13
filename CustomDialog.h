@@ -30,6 +30,8 @@ public:
     bool useReg();
     bool backward();
     QPushButton *findAction(){return findButton;}
+signals:
+    void find();
 private:
     QLabel *label;
     QLineEdit *lineEdit;
