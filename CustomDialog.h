@@ -50,7 +50,7 @@ class InsertTableDialog:public QDialog
     Q_OBJECT
 public:
     InsertTableDialog(QWidget *parent=0);
-    int colunm();
+    int column();
     int row();
 private:
     QLabel *sizeLabel;

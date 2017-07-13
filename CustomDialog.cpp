@@ -139,3 +139,7 @@ InsertTableDialog::InsertTableDialog(QWidget *parent):QDialog(parent)
 
     setLayout(mainLayout);
 }
+
+int InsertTableDialog::column(){return columnBox->value();}
+
+int InsertTableDialog::row(){return rowBox->value();}

@@ -32,6 +32,7 @@ public slots:
     void showFindDialog();
     void takeSearch();
     void insertImage();
+    void insertTable();
 protected:
     //文件菜单函数的具体实现
     void openFile();

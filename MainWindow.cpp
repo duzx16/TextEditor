@@ -14,7 +14,7 @@ MainWindow::MainWindow(QWidget *parent):QMainWindow(parent)
     connect(findDialog->findAction(),SIGNAL(clicked(bool)),this,SLOT(takeSearch()));
 
     insertTableDialog=new InsertTableDialog(this);
-
+    connect(insertTableDialog,SIGNAL(accepted()),this,SLOT(insertTable()));
 
     createButtons();
     createActions();
@@ -474,6 +474,12 @@ void MainWindow::insertImage()
         return;
     }
     textEdit->insertImage(path);
+}
+
+void MainWindow::insertTable()
+{
+    int column=insertTableDialog->column(),row=insertTableDialog->row();
+    textEdit->textCursor().insertTable(row,column);
 }
 
 //覆盖事件
