@@ -19,6 +19,7 @@
         <file alias="leftalign">images/left.png</file>
         <file alias="rightalign">images/right.png</file>
         <file alias="find">images/find.png</file>
+        <file alias="insertImage">images/insertimage.png</file>
     </qresource>
     <qresource prefix="/text">
         <file alias="wordlist">wordlist.txt</file>

@@ -28,6 +28,13 @@ void TextEditor::setCompleter(QCompleter *completer)
                      this, SLOT(insertCompletion(QString)));
 }
 
+void TextEditor::insertImage(QString filename)
+{
+    QTextImageFormat imageFormat;
+    imageFormat.setName(filename);
+    textCursor().insertImage(imageFormat);
+}
+
 QCompleter *TextEditor::completer() const
 {
     return c;

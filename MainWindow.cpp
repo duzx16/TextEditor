@@ -196,6 +196,10 @@ void MainWindow::createActions()
     leftAlignAction->setChecked(true);
 
     //TODO 把列表添加进来
+    //添加插入菜单的操作
+    insertImageAction=new QAction(QIcon(":/icons/insertImage"),tr("Insert &Image"),this);
+    insertImageAction->setStatusTip(tr("Insert an image from file into the current cursor position"));
+    connect(insertImageAction,SIGNAL(triggered(bool)),this,SLOT(insertImage()));
 }
 
 void MainWindow::createMenus()
@@ -224,6 +228,9 @@ void MainWindow::createMenus()
     formatMenu->addAction(fontColorAction);
     formatMenu->addSeparator();
     formatMenu->addActions(alignGroup->actions());
+
+    insertMenu=menuBar()->addMenu("&Insert");
+    insertMenu->addAction(insertImageAction);
 }
 
 void MainWindow::createToolBars()
@@ -447,6 +454,17 @@ void MainWindow::takeSearch()
     {
         findDialog->setLastSearch();
     }
+}
+
+void MainWindow::insertImage()
+{
+    QString path=QFileDialog::getOpenFileName(this,tr("Open image"),".",tr("Image File(*.jpg *.png *.bmp *.jpeg *.gif)"));
+    if(path.isEmpty())
+    {
+        QMessageBox::warning(this,tr("Paht"),tr("You didn't select any file"));
+        return;
+    }
+    textEdit->insertImage(path);
 }
 
 //覆盖事件

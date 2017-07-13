@@ -15,6 +15,7 @@ public:
     explicit TextEditor(QWidget *parent = 0);
 
     void setCompleter(QCompleter *c);
+    void insertImage(QString filename);
     QCompleter *completer() const;
     ~TextEditor();
 protected slots:

@@ -31,6 +31,7 @@ public slots:
     void changeLisBox();
     void showFindDialog();
     void takeSearch();
+    void insertImage();
 protected:
     //文件菜单函数的具体实现
     void openFile();
@@ -61,6 +62,7 @@ private:
     QMenu *fileMenu;
     QMenu *editMenu;
     QMenu *formatMenu;
+    QMenu *insertMenu;
 
     //文件菜单的操作
     QAction *createFileAction;
@@ -90,6 +92,10 @@ private:
     QAction *rightAlignAction;
     QAction *centerAlignAction;
     QAction *justifyAlignAction;
+
+    //插入菜单的操作
+    QAction *insertImageAction;
+    QAction *insertTableAction;
 
     //工具栏
     QToolBar *fileBar;
