@@ -1,4 +1,4 @@
-#include "FindDialog.h"
+#include "CustomDialog.h"
 #include <QtWidgets>
 
 FindDialog::FindDialog(QWidget *parent):QDialog(parent)
@@ -101,4 +101,41 @@ bool FindDialog::useReg()
 bool FindDialog::backward()
 {
     return backwardCheckBox->isChecked();
+}
+
+InsertTableDialog::InsertTableDialog(QWidget *parent):QDialog(parent)
+{
+    //TODO 调整标签文字的字体和大小
+    sizeLabel=new QLabel(tr("Table Size"),this);
+    sizeLabel->setFont(QFont("Times New Roman",15,75));
+
+    columnLabel=new QLabel(tr("&Columns:"),this);
+    columnBox=new QSpinBox(this);
+    columnBox->setMinimum(1);
+    columnLabel->setBuddy(columnBox);
+
+    rowLabel=new QLabel(tr("&Rows:"),this);
+    rowBox=new QSpinBox(this);
+    rowBox->setMinimum(1);
+    rowLabel->setBuddy(rowBox);
+
+    buttonBox=new QDialogButtonBox(QDialogButtonBox::Ok| QDialogButtonBox::Cancel,this);
+    connect(buttonBox,&QDialogButtonBox::accepted,this,&QDialog::accept);
+    connect(buttonBox,&QDialogButtonBox::rejected,this,&QDialog::hide);
+
+    QHBoxLayout *columnLayout=new QHBoxLayout;
+    columnLayout->addWidget(columnLabel);
+    columnLayout->addWidget(columnBox);
+
+    QHBoxLayout *rowLayout=new QHBoxLayout;
+    rowLayout->addWidget(rowLabel);
+    rowLayout->addWidget(rowBox);
+
+    QVBoxLayout *mainLayout=new QVBoxLayout;
+    mainLayout->addWidget(sizeLabel);
+    mainLayout->addLayout(columnLayout);
+    mainLayout->addLayout(rowLayout);
+    mainLayout->addWidget(buttonBox);
+
+    setLayout(mainLayout);
 }

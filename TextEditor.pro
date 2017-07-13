@@ -26,12 +26,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += main.cpp \
     TextEditor.cpp \
     MainWindow.cpp \
-    FindDialog.cpp
+    CustomDialog.cpp
 
 HEADERS  += \
     Texteditor.h \
     MainWindows.h \
-    FindDialog.h
+    CustomDialog.h
 
 RESOURCES += \
     res.qrc

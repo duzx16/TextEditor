@@ -2,7 +2,7 @@
 #define TEXT_EDITOR_H
 
 #include "Texteditor.h"
-#include "FindDialog.h"
+#include "CustomDialog.h"
 #include <QMainWindow>
 
 QT_BEGIN_NAMESPACE
@@ -118,6 +118,8 @@ private:
     QCompleter *completer;
     //查找对话框
     FindDialog *findDialog;
+    //插入表格对话框
+    InsertTableDialog *insertTableDialog;
     //真正实现文本编辑器的类
     TextEditor *textEdit;
 

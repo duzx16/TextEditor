@@ -13,6 +13,9 @@ MainWindow::MainWindow(QWidget *parent):QMainWindow(parent)
     findDialog=new FindDialog(this);
     connect(findDialog->findAction(),SIGNAL(clicked(bool)),this,SLOT(takeSearch()));
 
+    insertTableDialog=new InsertTableDialog(this);
+
+
     createButtons();
     createActions();
     createMenus();
@@ -200,6 +203,10 @@ void MainWindow::createActions()
     insertImageAction=new QAction(QIcon(":/icons/insertImage"),tr("Insert &Image"),this);
     insertImageAction->setStatusTip(tr("Insert an image from file into the current cursor position"));
     connect(insertImageAction,SIGNAL(triggered(bool)),this,SLOT(insertImage()));
+
+    insertTableAction=new QAction(QIcon(":/icons/table"),tr("Insert &Table"),this);
+    insertTableAction->setShortcut(tr("Insert a table"));
+    connect(insertTableAction,&QAction::triggered,insertTableDialog,&QDialog::show);
 }
 
 void MainWindow::createMenus()
@@ -231,6 +238,8 @@ void MainWindow::createMenus()
 
     insertMenu=menuBar()->addMenu("&Insert");
     insertMenu->addAction(insertImageAction);
+    insertMenu->addSeparator();
+    insertMenu->addAction(insertTableAction);
 }
 
 void MainWindow::createToolBars()
