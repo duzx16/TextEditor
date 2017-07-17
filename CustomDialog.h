@@ -29,6 +29,7 @@ public:
     bool wholeWords();
     bool useReg();
     bool backward();
+    FindDialog &operator>>(QString &aim);
 signals:
     void find();
 private:
@@ -87,7 +88,6 @@ private:
     QLabel *widthLabel;
     QSpinBox *widthBox;
     QDialogButtonBox *buttonBox;
-
 };
 
 #endif // FINDDIALOG_H

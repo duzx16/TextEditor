@@ -536,7 +536,8 @@ void MainWindow::showFindDialog()
 
 void MainWindow::takeSearch()
 {
-    QString aim=findDialog->searchContent();
+    QString aim;
+    *findDialog>>aim;
     bool findResult;
     QTextDocument::FindFlags options=QTextDocument::FindFlags();
     if(findDialog->fromStart()&&findDialog->isNewSearch())

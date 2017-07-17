@@ -104,6 +104,12 @@ bool FindDialog::backward()
     return backwardCheckBox->isChecked();
 }
 
+FindDialog &FindDialog::operator>>(QString &aim)
+{
+    aim=this->lineEdit->text();
+    return *this;
+}
+
 BiNumberDialog::BiNumberDialog(QWidget *parent):QDialog(parent)
 {
 
