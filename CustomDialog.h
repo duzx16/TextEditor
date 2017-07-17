@@ -15,6 +15,7 @@ class QSpinBox;
 
 QT_END_NAMESPACE
 
+//查找对话框
 class FindDialog : public QDialog
 {
     Q_OBJECT
@@ -47,6 +48,7 @@ private:
     QString lastSearch;
 };
 
+//虚基类，提供了一个有两个整数输入框的对话框接口
 class BiNumberDialog:public QDialog
 {
     Q_OBJECT
@@ -57,7 +59,7 @@ public:
     virtual ~BiNumberDialog();
 };
 
-
+//具体实现：设置表格行数列数对话框
 class InsertTableDialog:public BiNumberDialog
 {
     Q_OBJECT
@@ -75,6 +77,7 @@ private:
 
 };
 
+//具体实现：设置图片长宽的对话框
 class ModifyImageDialog:public BiNumberDialog
 {
     Q_OBJECT

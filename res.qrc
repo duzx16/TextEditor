@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/icons">
-        <file alias="open_file">open.png</file>
         <file alias="save_file">images/save.png</file>
         <file alias="create_file">images/create.png</file>
         <file alias="redo">images/redo.png</file>
@@ -23,6 +22,7 @@
         <file alias="table">images/table.png</file>
         <file alias="close">images/close.png</file>
         <file alias="list">images/list.png</file>
+        <file alias="open">images/open.png</file>
     </qresource>
     <qresource prefix="/text">
         <file alias="wordlist">wordlist.txt</file>

@@ -11,6 +11,7 @@ TextEditor::~TextEditor()
 {
 }
 
+//为textEditor设置QCompleter
 void TextEditor::setCompleter(QCompleter *completer)
 {
     if (c)
@@ -28,6 +29,7 @@ void TextEditor::setCompleter(QCompleter *completer)
                      this, SLOT(insertCompletion(QString)));
 }
 
+//给定路径名实现插入图片
 void TextEditor::insertImage(QString filename)
 {
     QTextImageFormat imageFormat;
@@ -35,6 +37,7 @@ void TextEditor::insertImage(QString filename)
     textCursor().insertImage(imageFormat);
 }
 
+//融合表格中的单元格
 void TextEditor::mergeCell()
 {
     QTextTable *curTable=textCursor().currentTable();
@@ -44,11 +47,13 @@ void TextEditor::mergeCell()
     }
 }
 
+//返回所设置的QCompleter
 QCompleter *TextEditor::completer() const
 {
     return c;
 }
 
+//将自动补全的单词插入
 void TextEditor::insertCompletion(const QString& completion)
 {
     if (c->widget() != this)
@@ -61,6 +66,7 @@ void TextEditor::insertCompletion(const QString& completion)
     setTextCursor(tc);
 }
 
+//返回光标所在的单词
 QString TextEditor::textUnderCursor() const
 {
     QTextCursor tc = textCursor();
@@ -120,16 +126,19 @@ void TextEditor::keyPressEvent(QKeyEvent *e)
     c->complete(cr); // popup it up!
 }
 
+//设置字号的具体实现
 void TextEditor::setFontSize(const QString &size)
 {
     setFontPointSize(size.toFloat());
 }
 
+//设置字体加粗的具体实现
 void TextEditor::setFontBold(bool checked)
 {
     setFontWeight(checked?QFont::Bold:QFont::Normal);
 }
 
+//设置字体颜色的具体实现
 void TextEditor::setFontColor()
 {
     QColor color=QColorDialog::getColor(textColor(),this);

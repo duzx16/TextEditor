@@ -1,6 +1,7 @@
 #include "CustomDialog.h"
 #include <QtWidgets>
 
+//完成查找对话框的元素创建和布局设置
 FindDialog::FindDialog(QWidget *parent):QDialog(parent)
 {
     label=new QLabel(tr("Find &what"),this);
@@ -62,23 +63,28 @@ FindDialog::FindDialog(QWidget *parent):QDialog(parent)
 
 }
 
+//用于一次搜索完成后保存上一次搜索的内容
 void FindDialog::setLastSearch()
 {
     lastSearch=lineEdit->text();
 }
 
+//清除保存的上一次搜索内容
 void FindDialog::clearLastSearch(){lastSearch.clear();}
 
+//表示是否是一次新的搜索（这三个函数是为了“从文件开头查找”功能不会出现诡异的结果）
 bool FindDialog::isNewSearch()
 {
     return lineEdit->text()!=lastSearch;
 }
 
+//返回搜索输入框的内容
 QString FindDialog::searchContent()
 {
     return lineEdit->text();
 }
 
+//下面是返回一些选项的函数
 bool FindDialog::fromStart()
 {
     return fromStartCheckBox->isChecked();
@@ -104,6 +110,7 @@ bool FindDialog::backward()
     return backwardCheckBox->isChecked();
 }
 
+//运算符重载，用于获取搜索内容
 FindDialog &FindDialog::operator>>(QString &aim)
 {
     aim=this->lineEdit->text();
@@ -120,6 +127,7 @@ BiNumberDialog::~BiNumberDialog()
 
 }
 
+//插入表格对话框的元素创建与布局设置
 InsertTableDialog::InsertTableDialog(QWidget *parent):BiNumberDialog(parent)
 {
     //TODO 调整标签文字的字体和大小
@@ -161,6 +169,7 @@ int InsertTableDialog::verticalNum(){return columnBox->value();}
 
 int InsertTableDialog::horizontalNum(){return rowBox->value();}
 
+//改变图片大小对话框的元素创建和布局设置
 ModifyImageDialog::ModifyImageDialog(QWidget *parent):BiNumberDialog(parent)
 {
     sizeLabel=new QLabel(tr("Image Size"),this);
