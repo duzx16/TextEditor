@@ -30,12 +30,15 @@ public slots:
     void setTableHAlign(QAction *aim);
     void changeAlignAction();
     void changeTableAlignAction();
-    void changeLisBox();
+    void changeListBox();
+    void changeListAction();
     void showFindDialog();
     void takeSearch();
     void insertImage();
     void insertTable();
     void setImageSize();
+    void setList(int index);
+    void setList(QAction *action);
 protected:
     //文件菜单函数的具体实现
     void openFile();
@@ -70,6 +73,7 @@ private:
     QMenu *fileMenu;
     QMenu *editMenu;
     QMenu *formatMenu;
+    QMenu *listStyleMenu;
     QMenu *imageMenu;
     QMenu *tableMenu;
     QMenu *tableHAlignMenu;
@@ -104,6 +108,17 @@ private:
     QAction *rightAlignAction;
     QAction *centerAlignAction;
     QAction *justifyAlignAction;
+
+    QActionGroup *listStyleGroup;
+    QAction *standardListAction;
+    QAction *discListAction;
+    QAction *circleListAction;
+    QAction *squareListAction;
+    QAction *decimalListAction;
+    QAction *laListAction;
+    QAction *uaListAction;
+    QAction *lrListAction;
+    QAction *urListAction;
 
     //图片菜单的操作
     QAction *insertImageAction;

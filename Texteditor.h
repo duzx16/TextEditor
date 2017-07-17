@@ -25,7 +25,6 @@ protected slots:
     void setFontSize(const QString &size);
     void setFontBold(bool checked);
     void setFontColor();
-    void setList(int index);
 
     //表格菜单的具体实现
     void mergeCell();

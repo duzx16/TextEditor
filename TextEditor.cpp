@@ -139,33 +139,4 @@ void TextEditor::setFontColor()
     }
 }
 
-void TextEditor::setList(int index)
-{
-    QTextCursor cursor=textCursor();
-    if(index>0&&index<9)
-    {
-        QTextListFormat::Style style=QTextListFormat::Style(-index);
-        cursor.beginEditBlock();
-        QTextBlockFormat blockFormat=cursor.blockFormat();
-        QTextListFormat listFormat;
-        if(cursor.currentList())
-        {
-            listFormat=cursor.currentList()->format();
-        }
-        else
-        {
-            listFormat.setIndent(blockFormat.indent()+1);
-        }
-        listFormat.setStyle(style);
-        cursor.createList(listFormat);
-        cursor.endEditBlock();
-    }
-    else
-    {
-        QTextList *curList=cursor.currentList();
-        if(curList&&!curList->isEmpty())
-        {
-            curList->remove(cursor.block());
-        }
-    }
-}
+

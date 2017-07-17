@@ -97,8 +97,8 @@ void MainWindow::createButtons()
     listBox->addItem("UpperAlpha");
     listBox->addItem("LowerRoman");
     listBox->addItem("UpperRoman");
-    connect(listBox,SIGNAL(activated(int)),textEdit,SLOT(setList(int)));
-    connect(textEdit,SIGNAL(cursorPositionChanged()),this,SLOT(changeLisBox()));
+    connect(listBox,SIGNAL(activated(int)),this,SLOT(setList(int)));
+    connect(textEdit,SIGNAL(cursorPositionChanged()),this,SLOT(changeListBox()));
 }
 
 void MainWindow::createActions()
@@ -207,6 +207,31 @@ void MainWindow::createActions()
     connect(textEdit,SIGNAL(cursorPositionChanged()),this,SLOT(changeAlignAction()));
     leftAlignAction->setChecked(true);
 
+    //用于表示列表选项的动作
+    listStyleGroup=new QActionGroup(this);
+    standardListAction=new QAction(tr("&Standard"),listStyleGroup);
+    standardListAction->setCheckable(true);
+    discListAction=new QAction(tr("&Disc"),listStyleGroup);
+    discListAction->setCheckable(true);
+    circleListAction=new QAction(tr("&Circle"),listStyleGroup);
+    circleListAction->setCheckable(true);
+    squareListAction=new QAction(tr("&Square"),listStyleGroup);
+    squareListAction->setCheckable(true);
+    decimalListAction=new QAction(tr("&Demical"),listStyleGroup);
+    decimalListAction->setCheckable(true);
+    laListAction=new QAction(tr("&Lower Alpha"),listStyleGroup);
+    laListAction->setCheckable(true);
+    uaListAction=new QAction(tr("&Upper Alpha"),listStyleGroup);
+    uaListAction->setCheckable(true);
+    lrListAction=new QAction(tr("&Lower Roman"),listStyleGroup);
+    laListAction->setCheckable(true);
+    urListAction=new QAction(tr("&Upper Roman"),listStyleGroup);
+    urListAction->setCheckable(true);
+    standardListAction->setChecked(true);
+    connect(listStyleGroup,SIGNAL(triggered(QAction*)),this,SLOT(setList(QAction*)));
+    connect(textEdit,SIGNAL(cursorPositionChanged()),this,SLOT(changeListAction()));
+
+
     //TODO 把列表添加进来
     //添加图片菜单的操作
     insertImageAction=new QAction(QIcon(":/icons/insertImage"),tr("Insert &Image"),this);
@@ -267,6 +292,9 @@ void MainWindow::createMenus()
     formatMenu->addAction(fontColorAction);
     formatMenu->addSeparator();
     formatMenu->addActions(alignGroup->actions());
+    formatMenu->addSeparator();
+    listStyleMenu=formatMenu->addMenu(QIcon(":/icons/list"),tr("&List Style"));
+    listStyleMenu->addActions(listStyleGroup->actions());
 
     imageMenu=menuBar()->addMenu("&Image");
     imageMenu->addAction(insertImageAction);
@@ -514,8 +542,63 @@ void MainWindow::changeTableAlignAction()
     }
 }
 
+void MainWindow::setList(int index)
+{
+    QTextCursor cursor=textEdit->textCursor();
+    if(index>0&&index<9)
+    {
+        QTextListFormat::Style style=QTextListFormat::Style(-index);
+        cursor.beginEditBlock();
+        QTextBlockFormat blockFormat=cursor.blockFormat();
+        QTextListFormat listFormat;
+        if(cursor.currentList())
+        {
+            listFormat=cursor.currentList()->format();
+        }
+        else
+        {
+            listFormat.setIndent(blockFormat.indent()+1);
+        }
+        listFormat.setStyle(style);
+        cursor.createList(listFormat);
+        cursor.endEditBlock();
+    }
+    else
+    {
+        QTextList *curList=cursor.currentList();
+        if(curList&&!curList->isEmpty())
+        {
+            curList->remove(cursor.block());
+        }
+    }
+    changeListAction();
+}
+
+void MainWindow::setList(QAction *action)
+{
+    if(action==standardListAction)
+        setList(0);
+    else if(action==discListAction)
+        setList(1);
+    else if(action==circleListAction)
+        setList(2);
+    else if(action==squareListAction)
+        setList(3);
+    else if(action==decimalListAction)
+        setList(4);
+    else if(action==laListAction)
+        setList(5);
+    else if(action==uaListAction)
+        setList(6);
+    else if(action==lrListAction)
+        setList(7);
+    else if(action==urListAction)
+        setList(8);
+    changeListBox();
+}
+
 //在鼠标位置变化时更新列表选项框
-void MainWindow::changeLisBox()
+void MainWindow::changeListBox()
 {
     QTextCursor cursor=textEdit->textCursor();
     QTextList *curList=cursor.currentList();
@@ -526,6 +609,29 @@ void MainWindow::changeLisBox()
     else
     {
         listBox->setCurrentIndex(0);
+    }
+}
+
+void MainWindow::changeListAction()
+{
+    QTextList *curList=textEdit->textCursor().currentList();
+    if(curList)
+    {
+        switch(curList->format().style())
+        {
+        case QTextListFormat::ListDisc:discListAction->setChecked(true);break;
+        case QTextListFormat::ListCircle:circleListAction->setChecked(true);break;
+        case QTextListFormat::ListSquare:squareListAction->setChecked(true);break;
+        case QTextListFormat::ListDecimal:decimalListAction->setChecked(true);break;
+        case QTextListFormat::ListLowerAlpha:laListAction->setChecked(true);break;
+        case QTextListFormat::ListUpperAlpha:uaListAction->setChecked(true);break;
+        case QTextListFormat::ListLowerRoman:lrListAction->setChecked(true);break;
+        case QTextListFormat::ListUpperRoman:urListAction->setChecked(true);break;
+        }
+    }
+    else
+    {
+        standardListAction->setChecked(true);
     }
 }
 
