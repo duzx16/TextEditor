@@ -21,36 +21,47 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
+
     MainWindow(QWidget *parent = 0);
     QAbstractItemModel *modelFromFile(const QString& fileName);
-
     ~MainWindow();
 public slots:
-    void setBlockAlign(QAction *aim);
-    void setTableHAlign(QAction *aim);
-    void changeAlignAction();
-    void changeTableAlignAction();
-    void changeListBox();
-    void changeListAction();
-    void showFindDialog();
-    void takeSearch();
-    void insertImage();
-    void insertTable();
-    void setImageSize();
-    void setList(int index);
-    void setList(QAction *action);
-protected:
     //文件菜单函数的具体实现
     void openFile();
     void saveFile();
     void createFile();
     void saveAsFile();
 
-    void closeEvent(QCloseEvent *event) override;
-signals:
-    void fontBoldChanged(bool) const;
-private slots:
+    //编辑菜单查找功能的具体实现
+    void takeSearch();
+
+    //格式菜单功能的具体实现
+    void setBlockAlign(QAction *aim);
+
+
+    //与列表有关的具体实现函数
+    void setList(int index);
+    void setList(QAction *action);
+
+    //图片菜单函数的具体实现
+    void insertImage();
+    void setImageSize();
+
+    //表格菜单函数的具体实现
+    void insertTable();
+    void setTableHAlign(QAction *aim);
+
+    //用于自动更新界面上的某些选项
     void changeFontAction(const QTextCharFormat &format);
+    void changeAlignAction();
+    void changeTableAlignAction();
+    void changeListBox();
+    void changeListAction();
+
+
+
+protected:
+    void closeEvent(QCloseEvent *event) override;
 private:
     //创建GUI中的具体元素
     void createActions();
@@ -58,7 +69,7 @@ private:
     void createToolBars();
     void createButtons();
 
-    //两个负责具体实现的底层函数
+    //两个负责文件读写具体实现的底层函数
     void loadFile(const QString &filename);
     void serialFile(const QString &filename);
 
@@ -98,17 +109,20 @@ private:
     QAction *findAction;
 
     //格式菜单的操作
+    //字体
     QAction *boldAction;
     QAction *italicAction;
     QAction *underlineAction;
     QAction *fontColorAction;
 
+    //对齐
     QActionGroup *alignGroup;
     QAction *leftAlignAction;
     QAction *rightAlignAction;
     QAction *centerAlignAction;
     QAction *justifyAlignAction;
 
+    //列表
     QActionGroup *listStyleGroup;
     QAction *standardListAction;
     QAction *discListAction;
@@ -127,6 +141,7 @@ private:
     //表格菜单的操作
     QAction *insertTableAction;
     QAction *mergeCellAction;
+    //表格的对齐
     QActionGroup *tableHAlignGroup;
     QAction *tableLeftAlignAction;
     QAction *tableRightAlignAction;
@@ -148,6 +163,8 @@ private:
     //段落
     QLabel *listLabel;
     QComboBox *listBox;
+
+
     //保存当前绑定的文件的路径
     QString curFileName;
     //用于实现自动补全的类

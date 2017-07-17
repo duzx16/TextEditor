@@ -6,38 +6,48 @@
 MainWindow::MainWindow(QWidget *parent):QMainWindow(parent)
 {
 
-    //文本编辑器的底层实现
+    //创建文本编辑器
     textEdit=new TextEditor(this);
     connect(textEdit->document(),&QTextDocument::modificationChanged,this,&MainWindow::setWindowModified);
 
+    //创建查找对话框
     findDialog=new FindDialog(this);
     connect(findDialog,SIGNAL(find()),this,SLOT(takeSearch()));
 
+    //创建插入表格对话框
     insertTableDialog=new InsertTableDialog(this);
     connect(insertTableDialog,SIGNAL(accepted()),this,SLOT(insertTable()));
 
+    //创建调整图片大小对话框
     modifyImageDialog=new ModifyImageDialog(this);
     connect(modifyImageDialog,SIGNAL(accepted()),this,SLOT(setImageSize()));
 
+    //创建GUI中的元素
     createButtons();
     createActions();
     createMenus();
     createToolBars();
 
+    //显示状态栏
     statusBar();
 
+    //设置自动补全功能
     completer=new QCompleter(this);
     completer->setModel(modelFromFile(":/text/wordlist"));
     completer->setModelSorting(QCompleter::CaseInsensitivelySortedModel);
     completer->setCaseSensitivity(Qt::CaseInsensitive);
     completer->setWrapAround(false);
     textEdit->setCompleter(completer);
+
+    //设置窗口布局
     setCentralWidget(textEdit);
     resize(800, 600);
     setWindowTitle(tr("Text Editor[*]"));
     loadSettings();
 
 }
+
+//用于读取自动补全的wordlist
 QAbstractItemModel *MainWindow::modelFromFile(const QString& fileName)
 {
     QFile file(fileName);
@@ -70,13 +80,16 @@ MainWindow::~MainWindow()
 
 }
 
+//创建工具栏上按钮和选项框
 void MainWindow::createButtons()
 {
+    //创建字体选项框
     fontLabel=new QLabel(tr("Font:"));
     fontBox=new QFontComboBox;
     fontBox->setFontFilters(QFontComboBox::ScalableFonts);
     connect(fontBox,SIGNAL(activated(QString)),textEdit,SLOT(setFontFamily(QString)));
 
+    //创建字号选项框
     sizeLabel=new QLabel(tr("Size:"));
     sizeBox=new QComboBox;
     sizeBox->setEditable(true);
@@ -86,6 +99,7 @@ void MainWindow::createButtons()
     }
     connect(sizeBox,SIGNAL(activated(QString)),textEdit,SLOT(setFontSize(QString)));
 
+    //创建列表选项框
     listLabel=new QLabel(tr("List:"));
     listBox=new QComboBox;
     listBox->addItem("Standard");
@@ -103,7 +117,7 @@ void MainWindow::createButtons()
 
 void MainWindow::createActions()
 {
-    //添加文件菜单的操作
+    //添加文件菜单的动作
     openFileAction=new QAction(QIcon(":/icons/open_file"),tr("&Open..."),this);
     openFileAction->setShortcut(QKeySequence::Open);
     openFileAction->setStatusTip(tr("Open an existing file"));
@@ -129,7 +143,7 @@ void MainWindow::createActions()
     closeFileAction->setStatusTip(tr("Close the current window."));
     connect(closeFileAction,&QAction::triggered,this,&MainWindow::close);
 
-    //添加编辑菜单的操作
+    //添加编辑菜单的动作
     undoAction=new QAction(QIcon(":/icons/undo"),tr("&Undo"),this);
     undoAction->setShortcut(QKeySequence::Undo);
     undoAction->setStatusTip(tr("Undo the last operation"));
@@ -171,9 +185,9 @@ void MainWindow::createActions()
     findAction=new QAction(QIcon(":/icons/find"),tr("&Find"),this);
     findAction->setShortcut(QKeySequence::Find);
     findAction->setStatusTip(tr("Find and select the specific text"));
-    connect(findAction,SIGNAL(triggered(bool)),this,SLOT(showFindDialog()));
+    connect(findAction,SIGNAL(triggered(bool)),findDialog,SLOT(show()));
 
-    //添加格式菜单的操作
+    //添加格式菜单的动作
     boldAction=new QAction(QIcon(":/icons/bold"),tr("&Bold"),this);
     boldAction->setCheckable(true);
     connect(boldAction,SIGNAL(triggered(bool)),textEdit,SLOT(setFontBold(bool)));
@@ -189,7 +203,6 @@ void MainWindow::createActions()
     fontColorAction=new QAction(QIcon(":./icons/fontcolor"),tr("&Font Color"),this);
     connect(fontColorAction,SIGNAL(triggered(bool)),textEdit,SLOT(setFontColor()));
 
-    changeFontAction(textEdit->currentCharFormat());
     connect(textEdit,SIGNAL(currentCharFormatChanged(QTextCharFormat)),this,SLOT(changeFontAction(QTextCharFormat)));
 
     //用于表示对齐的动作
@@ -231,16 +244,17 @@ void MainWindow::createActions()
     connect(listStyleGroup,SIGNAL(triggered(QAction*)),this,SLOT(setList(QAction*)));
     connect(textEdit,SIGNAL(cursorPositionChanged()),this,SLOT(changeListAction()));
 
-
-    //TODO 把列表添加进来
-    //添加图片菜单的操作
+    //添加图片菜单的动作
     insertImageAction=new QAction(QIcon(":/icons/insertImage"),tr("Insert &Image"),this);
     insertImageAction->setStatusTip(tr("Insert an image from file into the current cursor position"));
     connect(insertImageAction,SIGNAL(triggered(bool)),this,SLOT(insertImage()));
 
     modifyImageAction=new QAction(tr("Image Size"),this);
+    modifyImageAction->setStatusTip("Change the size of the current image");
     connect(modifyImageAction,SIGNAL(triggered(bool)),modifyImageDialog,SLOT(show()));
-    //添加表格菜单的操作
+    modifyImageAction->setEnabled(false);
+
+    //添加表格菜单的动作
     insertTableAction=new QAction(QIcon(":/icons/table"),tr("Insert &Table"),this);
     insertTableAction->setStatusTip(tr("Insert a table"));
     connect(insertTableAction,&QAction::triggered,insertTableDialog,&QDialog::show);
@@ -263,10 +277,15 @@ void MainWindow::createActions()
     tableHAlignGroup->setEnabled(false);
     connect(textEdit,SIGNAL(cursorPositionChanged()),this,SLOT(changeTableAlignAction()));
 
+    changeFontAction(textEdit->currentCharFormat());
+
+
 }
 
+//完成菜单的创建并在菜单中添加动作
 void MainWindow::createMenus()
 {
+    //文件菜单
     fileMenu=menuBar()->addMenu(tr("&File"));
     fileMenu->addAction(createFileAction);
     fileMenu->addAction(openFileAction);
@@ -274,6 +293,7 @@ void MainWindow::createMenus()
     fileMenu->addAction(saveAsFileAction);
     fileMenu->addAction(closeFileAction);
 
+    //编辑菜单
     editMenu=menuBar()->addMenu(tr("&Edit"));
     editMenu->addAction(undoAction);
     editMenu->addAction(redoAction);
@@ -285,6 +305,7 @@ void MainWindow::createMenus()
     editMenu->addAction(selectallAction);
     editMenu->addAction(findAction);
 
+    //格式菜单
     formatMenu=menuBar()->addMenu("&Format");
     formatMenu->addAction(boldAction);
     formatMenu->addAction(italicAction);
@@ -296,11 +317,13 @@ void MainWindow::createMenus()
     listStyleMenu=formatMenu->addMenu(QIcon(":/icons/list"),tr("&List Style"));
     listStyleMenu->addActions(listStyleGroup->actions());
 
+    //图片菜单
     imageMenu=menuBar()->addMenu("&Image");
     imageMenu->addAction(insertImageAction);
     imageMenu->addSeparator();
     imageMenu->addAction(modifyImageAction);
 
+    //表格菜单
     tableMenu=menuBar()->addMenu("&Table");
     tableMenu->addAction(insertTableAction);
     tableMenu->addSeparator();
@@ -309,6 +332,7 @@ void MainWindow::createMenus()
     tableHAlignMenu->addActions(tableHAlignGroup->actions());
 }
 
+//创建工具栏并在其上添加元素
 void MainWindow::createToolBars()
 {
     //文件工具栏
@@ -346,6 +370,7 @@ void MainWindow::createToolBars()
     blockBar->addWidget(listBox);
 }
 
+//新建文件动作的具体实现
 void MainWindow::createFile()
 {
     MainWindow *newText=new MainWindow(this->parentWidget());
@@ -353,6 +378,7 @@ void MainWindow::createFile()
     newText->show();
 }
 
+//打开文件动作的具体实现
 void MainWindow::openFile()
 {
     QString path=QFileDialog::getOpenFileName(this,tr("Open File"),".",tr("Text Files(*.txt);;HTML Files(*.html)"));
@@ -375,6 +401,7 @@ void MainWindow::openFile()
     }
 }
 
+//保存文件动作的具体实现
 void MainWindow::saveFile()
 {
     if(curFileName.isEmpty())
@@ -389,6 +416,7 @@ void MainWindow::saveFile()
         serialFile(curFileName);
 }
 
+//另存为文件动作的具体实现
 void MainWindow::saveAsFile()
 {
     QString path=QFileDialog::getSaveFileName(this,tr("Save File"),".",tr("Text File(*.txt);;HTML File(*.html)"));
@@ -399,6 +427,7 @@ void MainWindow::saveAsFile()
 
 }
 
+//加载文件的函数
 void MainWindow::loadFile(const QString &filename)
 {
     QFile file(filename);
@@ -416,9 +445,7 @@ void MainWindow::loadFile(const QString &filename)
     file.close();
 }
 
-
-
-
+//保存（序列化）文件的函数
 void MainWindow::serialFile(const QString &filename)
 {
     QFile file(filename);
@@ -437,17 +464,7 @@ void MainWindow::serialFile(const QString &filename)
     setWindowModified(false);
 }
 
-//用于在光标所在处的格式发生变化时更改字体工具栏的函数
-void MainWindow::changeFontAction(const QTextCharFormat &format)
-{
-    fontBox->setCurrentFont(format.font());
-    sizeBox->setCurrentText(QString::number(format.fontPointSize()));
-    boldAction->setChecked(format.font().bold());
-    italicAction->setChecked(format.fontItalic());
-    underlineAction->setChecked(format.fontUnderline());
-}
-
-
+//返回光标所在处的单词
 QString MainWindow::textUnderCursor() const
 {
     QTextCursor tc = textEdit->textCursor();
@@ -455,6 +472,7 @@ QString MainWindow::textUnderCursor() const
     return tc.selectedText();
 }
 
+//保存当前的窗口布局
 void MainWindow::saveSettings()
 {
     QSettings settings("./settings.int",QSettings::IniFormat);
@@ -464,6 +482,7 @@ void MainWindow::saveSettings()
     settings.endGroup();
 }
 
+//加载窗口布局
 void MainWindow::loadSettings()
 {
     QSettings settings("./settings.int",QSettings::IniFormat);
@@ -471,6 +490,20 @@ void MainWindow::loadSettings()
     restoreGeometry(settings.value("geometry").toByteArray());
     restoreState(settings.value("state").toByteArray());
     settings.endGroup();
+}
+
+//用于在光标所在处的格式发生变化时更改字体工具栏的函数
+void MainWindow::changeFontAction(const QTextCharFormat &format)
+{
+    fontBox->setCurrentFont(format.font());
+    sizeBox->setCurrentText(QString::number(format.fontPointSize()));
+    boldAction->setChecked(format.font().bold());
+    italicAction->setChecked(format.fontItalic());
+    underlineAction->setChecked(format.fontUnderline());
+    if(format.toImageFormat().isValid())
+        modifyImageAction->setEnabled(true);
+    else
+        modifyImageAction->setEnabled(false);
 }
 
 //设置段落对齐格式
@@ -486,6 +519,7 @@ void MainWindow::setBlockAlign(QAction *aim)
         textEdit->setAlignment(Qt::AlignJustify);
 }
 
+//设置表格对齐格式
 void MainWindow::setTableHAlign(QAction *aim)
 {
     QTextTable *curTable=textEdit->textCursor().currentTable();
@@ -506,42 +540,7 @@ void MainWindow::setTableHAlign(QAction *aim)
 
 }
 
-
-
-void MainWindow::changeAlignAction()
-{
-   Qt::Alignment align=textEdit->alignment();
-   switch(align)
-   {
-   case Qt::AlignLeft:leftAlignAction->setChecked(true);break;
-   case Qt::AlignRight:rightAlignAction->setChecked(true);break;
-   case Qt::AlignCenter:centerAlignAction->setChecked(true);break;
-   case Qt::AlignJustify:justifyAlignAction->setChecked(true);break;
-   }
-}
-
-void MainWindow::changeTableAlignAction()
-{
-    QTextTable *curTable=textEdit->textCursor().currentTable();
-    if(curTable)
-    {
-        tableHAlignGroup->setEnabled(true);
-        Qt::Alignment flag=curTable->format().alignment();
-        if(flag&Qt::AlignLeft)
-            tableLeftAlignAction->setChecked(true);
-        else if(flag&Qt::AlignRight)
-            tableRightAlignAction->setChecked(true);
-        else if(flag&Qt::AlignHCenter)
-            tableHCenterAlignAction->setChecked(true);
-        else if(flag&Qt::AlignJustify)
-            tableJustifyAlignAction->setChecked(true);
-    }
-    else
-    {
-        tableHAlignGroup->setEnabled(false);
-    }
-}
-
+//设置列表项目格式（工具栏版）
 void MainWindow::setList(int index)
 {
     QTextCursor cursor=textEdit->textCursor();
@@ -574,6 +573,7 @@ void MainWindow::setList(int index)
     changeListAction();
 }
 
+//设置列表项目格式（菜单版）
 void MainWindow::setList(QAction *action)
 {
     if(action==standardListAction)
@@ -597,6 +597,44 @@ void MainWindow::setList(QAction *action)
     changeListBox();
 }
 
+//更新菜单栏上段落对齐选项
+void MainWindow::changeAlignAction()
+{
+   Qt::Alignment align=textEdit->alignment();
+   switch(align)
+   {
+   case Qt::AlignLeft:leftAlignAction->setChecked(true);break;
+   case Qt::AlignRight:rightAlignAction->setChecked(true);break;
+   case Qt::AlignCenter:centerAlignAction->setChecked(true);break;
+   case Qt::AlignJustify:justifyAlignAction->setChecked(true);break;
+   }
+}
+
+//更新菜单栏上表格对齐选项
+void MainWindow::changeTableAlignAction()
+{
+    QTextTable *curTable=textEdit->textCursor().currentTable();
+    if(curTable)
+    {
+        tableHAlignGroup->setEnabled(true);
+        Qt::Alignment flag=curTable->format().alignment();
+        if(flag&Qt::AlignLeft)
+            tableLeftAlignAction->setChecked(true);
+        else if(flag&Qt::AlignRight)
+            tableRightAlignAction->setChecked(true);
+        else if(flag&Qt::AlignHCenter)
+            tableHCenterAlignAction->setChecked(true);
+        else if(flag&Qt::AlignJustify)
+            tableJustifyAlignAction->setChecked(true);
+    }
+    else
+    {
+        tableHAlignGroup->setEnabled(false);
+    }
+}
+
+
+
 //在鼠标位置变化时更新列表选项框
 void MainWindow::changeListBox()
 {
@@ -612,6 +650,7 @@ void MainWindow::changeListBox()
     }
 }
 
+//在鼠标位置变化时更新菜单栏中的列表设置
 void MainWindow::changeListAction()
 {
     QTextList *curList=textEdit->textCursor().currentList();
@@ -635,11 +674,7 @@ void MainWindow::changeListAction()
     }
 }
 
-void MainWindow::showFindDialog()
-{
-    findDialog->show();
-}
-
+//根据用户输入的文本和选项进行搜索
 void MainWindow::takeSearch()
 {
     QString aim;
@@ -677,6 +712,7 @@ void MainWindow::takeSearch()
     }
 }
 
+//插入图片的具体实现
 void MainWindow::insertImage()
 {
     QString path=QFileDialog::getOpenFileName(this,tr("Open image"),".",tr("Image File(*.jpg *.png *.bmp *.jpeg *.gif)"));
@@ -688,12 +724,14 @@ void MainWindow::insertImage()
     textEdit->insertImage(path);
 }
 
+//插入表格的具体实现
 void MainWindow::insertTable()
 {
     int column=insertTableDialog->verticalNum(),row=insertTableDialog->horizontalNum();
     textEdit->textCursor().insertTable(row,column);
 }
 
+//设置图片大小的具体实现
 void MainWindow::setImageSize()
 {
     QTextImageFormat curImg=textEdit->currentCharFormat().toImageFormat();

@@ -54,6 +54,7 @@ public:
     BiNumberDialog(QWidget *parent=0);
     virtual int verticalNum()=0;
     virtual int horizontalNum()=0;
+    virtual ~BiNumberDialog();
 };
 
 

@@ -115,6 +115,11 @@ BiNumberDialog::BiNumberDialog(QWidget *parent):QDialog(parent)
 
 }
 
+BiNumberDialog::~BiNumberDialog()
+{
+
+}
+
 InsertTableDialog::InsertTableDialog(QWidget *parent):BiNumberDialog(parent)
 {
     //TODO 调整标签文字的字体和大小
