@@ -29,7 +29,6 @@ public:
     bool wholeWords();
     bool useReg();
     bool backward();
-    QPushButton *findAction(){return findButton;}
 signals:
     void find();
 private:
@@ -47,19 +46,46 @@ private:
     QString lastSearch;
 };
 
-class InsertTableDialog:public QDialog
+class BiNumberDialog:public QDialog
+{
+    Q_OBJECT
+public:
+    BiNumberDialog(QWidget *parent=0);
+    virtual int verticalNum()=0;
+    virtual int horizontalNum()=0;
+};
+
+
+class InsertTableDialog:public BiNumberDialog
 {
     Q_OBJECT
 public:
     InsertTableDialog(QWidget *parent=0);
-    int column();
-    int row();
+    int verticalNum();
+    int horizontalNum();
 private:
     QLabel *sizeLabel;
     QLabel *columnLabel;
     QSpinBox *columnBox;
     QLabel *rowLabel;
     QSpinBox *rowBox;
+    QDialogButtonBox *buttonBox;
+
+};
+
+class ModifyImageDialog:public BiNumberDialog
+{
+    Q_OBJECT
+public:
+    ModifyImageDialog(QWidget *parent=0);
+    int verticalNum();
+    int horizontalNum();
+private:
+    QLabel *sizeLabel;
+    QLabel *heightLabel;
+    QSpinBox *heightBox;
+    QLabel *widthLabel;
+    QSpinBox *widthBox;
     QDialogButtonBox *buttonBox;
 
 };

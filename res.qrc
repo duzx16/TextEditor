@@ -21,6 +21,8 @@
         <file alias="find">images/find.png</file>
         <file alias="insertImage">images/insertimage.png</file>
         <file alias="table">images/table.png</file>
+        <file alias="close">images/close.png</file>
+        <file alias="list">images/list.png</file>
     </qresource>
     <qresource prefix="/text">
         <file alias="wordlist">wordlist.txt</file>

@@ -27,12 +27,15 @@ public:
     ~MainWindow();
 public slots:
     void setBlockAlign(QAction *aim);
+    void setTableHAlign(QAction *aim);
     void changeAlignAction();
+    void changeTableAlignAction();
     void changeLisBox();
     void showFindDialog();
     void takeSearch();
     void insertImage();
     void insertTable();
+    void setImageSize();
 protected:
     //文件菜单函数的具体实现
     void openFile();
@@ -58,18 +61,26 @@ private:
 
     QString textUnderCursor() const;
 
+    //用于保存和载入窗口的布局
+    void saveSettings();
+    void loadSettings();
+
 
     //菜单
     QMenu *fileMenu;
     QMenu *editMenu;
     QMenu *formatMenu;
-    QMenu *insertMenu;
+    QMenu *imageMenu;
+    QMenu *tableMenu;
+    QMenu *tableHAlignMenu;
+    QMenu *tableVAlignMenu;
 
     //文件菜单的操作
     QAction *createFileAction;
     QAction *openFileAction;
     QAction *saveFileAction;
     QAction *saveAsFileAction;
+    QAction *closeFileAction;
 
     //编辑菜单的操作
     QAction *undoAction;
@@ -94,9 +105,18 @@ private:
     QAction *centerAlignAction;
     QAction *justifyAlignAction;
 
-    //插入菜单的操作
+    //图片菜单的操作
     QAction *insertImageAction;
+    QAction *modifyImageAction;
+
+    //表格菜单的操作
     QAction *insertTableAction;
+    QAction *mergeCellAction;
+    QActionGroup *tableHAlignGroup;
+    QAction *tableLeftAlignAction;
+    QAction *tableRightAlignAction;
+    QAction *tableHCenterAlignAction;
+    QAction *tableJustifyAlignAction;
 
     //工具栏
     QToolBar *fileBar;
@@ -120,7 +140,9 @@ private:
     //查找对话框
     FindDialog *findDialog;
     //插入表格对话框
-    InsertTableDialog *insertTableDialog;
+    BiNumberDialog *insertTableDialog;
+    //修改图片大小对话框
+    BiNumberDialog *modifyImageDialog;
     //真正实现文本编辑器的类
     TextEditor *textEdit;
 

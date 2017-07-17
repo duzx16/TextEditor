@@ -16,6 +16,9 @@ MainWindow::MainWindow(QWidget *parent):QMainWindow(parent)
     insertTableDialog=new InsertTableDialog(this);
     connect(insertTableDialog,SIGNAL(accepted()),this,SLOT(insertTable()));
 
+    modifyImageDialog=new ModifyImageDialog(this);
+    connect(modifyImageDialog,SIGNAL(accepted()),this,SLOT(setImageSize()));
+
     createButtons();
     createActions();
     createMenus();
@@ -32,6 +35,7 @@ MainWindow::MainWindow(QWidget *parent):QMainWindow(parent)
     setCentralWidget(textEdit);
     resize(800, 600);
     setWindowTitle(tr("Text Editor[*]"));
+    loadSettings();
 
 }
 QAbstractItemModel *MainWindow::modelFromFile(const QString& fileName)
@@ -120,6 +124,11 @@ void MainWindow::createActions()
     saveAsFileAction->setStatusTip(tr("Save the current file as a new file"));
     connect(saveAsFileAction,&QAction::triggered,this,&MainWindow::saveAsFile);
 
+    closeFileAction=new QAction(QIcon(":/icons/close"),tr("&Close"),this);
+    closeFileAction->setShortcut(QKeySequence::Close);
+    closeFileAction->setStatusTip(tr("Close the current window."));
+    connect(closeFileAction,&QAction::triggered,this,&MainWindow::close);
+
     //添加编辑菜单的操作
     undoAction=new QAction(QIcon(":/icons/undo"),tr("&Undo"),this);
     undoAction->setShortcut(QKeySequence::Undo);
@@ -199,14 +208,36 @@ void MainWindow::createActions()
     leftAlignAction->setChecked(true);
 
     //TODO 把列表添加进来
-    //添加插入菜单的操作
+    //添加图片菜单的操作
     insertImageAction=new QAction(QIcon(":/icons/insertImage"),tr("Insert &Image"),this);
     insertImageAction->setStatusTip(tr("Insert an image from file into the current cursor position"));
     connect(insertImageAction,SIGNAL(triggered(bool)),this,SLOT(insertImage()));
 
+    modifyImageAction=new QAction(tr("Image Size"),this);
+    connect(modifyImageAction,SIGNAL(triggered(bool)),modifyImageDialog,SLOT(show()));
+    //添加表格菜单的操作
     insertTableAction=new QAction(QIcon(":/icons/table"),tr("Insert &Table"),this);
-    insertTableAction->setShortcut(tr("Insert a table"));
+    insertTableAction->setStatusTip(tr("Insert a table"));
     connect(insertTableAction,&QAction::triggered,insertTableDialog,&QDialog::show);
+
+    mergeCellAction=new QAction(QIcon(),tr("&Merge Cells"),this);
+    mergeCellAction->setStatusTip(tr("Merge the cells selected by the cursor"));
+    connect(mergeCellAction,SIGNAL(triggered(bool)),textEdit,SLOT(mergeCell()));
+
+    tableHAlignGroup=new QActionGroup(this);
+    tableLeftAlignAction=new QAction(tr("Left Align"),tableHAlignGroup);
+    tableLeftAlignAction->setCheckable(true);
+    tableRightAlignAction=new QAction(tr("Right Align"),tableHAlignGroup);
+    tableRightAlignAction->setCheckable(true);
+    tableHCenterAlignAction=new QAction(tr("Center Align"),tableHAlignGroup);
+    tableHCenterAlignAction->setCheckable(true);
+    tableJustifyAlignAction=new QAction(tr("Justify Align"),tableHAlignGroup);
+    tableJustifyAlignAction->setCheckable(true);
+    connect(tableHAlignGroup, SIGNAL(triggered(QAction*)),this,SLOT(setTableHAlign(QAction*)));
+    tableLeftAlignAction->setChecked(true);
+    tableHAlignGroup->setEnabled(false);
+    connect(textEdit,SIGNAL(cursorPositionChanged()),this,SLOT(changeTableAlignAction()));
+
 }
 
 void MainWindow::createMenus()
@@ -216,6 +247,7 @@ void MainWindow::createMenus()
     fileMenu->addAction(openFileAction);
     fileMenu->addAction(saveFileAction);
     fileMenu->addAction(saveAsFileAction);
+    fileMenu->addAction(closeFileAction);
 
     editMenu=menuBar()->addMenu(tr("&Edit"));
     editMenu->addAction(undoAction);
@@ -236,22 +268,31 @@ void MainWindow::createMenus()
     formatMenu->addSeparator();
     formatMenu->addActions(alignGroup->actions());
 
-    insertMenu=menuBar()->addMenu("&Insert");
-    insertMenu->addAction(insertImageAction);
-    insertMenu->addSeparator();
-    insertMenu->addAction(insertTableAction);
+    imageMenu=menuBar()->addMenu("&Image");
+    imageMenu->addAction(insertImageAction);
+    imageMenu->addSeparator();
+    imageMenu->addAction(modifyImageAction);
+
+    tableMenu=menuBar()->addMenu("&Table");
+    tableMenu->addAction(insertTableAction);
+    tableMenu->addSeparator();
+    tableMenu->addAction(mergeCellAction);
+    tableHAlignMenu=tableMenu->addMenu("&Horizontal Align");
+    tableHAlignMenu->addActions(tableHAlignGroup->actions());
 }
 
 void MainWindow::createToolBars()
 {
     //文件工具栏
     fileBar=addToolBar("&File");
+    fileBar->setObjectName("fileBar");
     fileBar->addAction(createFileAction);
     fileBar->addAction(openFileAction);
     fileBar->addAction(saveFileAction);
 
     //编辑工具栏
     editBar=addToolBar("&Edit");
+    editBar->setObjectName("editBar");
     editBar->addAction(undoAction);
     editBar->addAction(redoAction);
     editBar->addAction(cutAction);
@@ -260,6 +301,7 @@ void MainWindow::createToolBars()
 
     //字体工具栏
     fontBar=addToolBar("&Font");
+    fontBar->setObjectName("fontBar");
     fontBar->addWidget(fontLabel);
     fontBar->addWidget(fontBox);
     fontBar->addWidget(sizeLabel);
@@ -271,6 +313,7 @@ void MainWindow::createToolBars()
 
     //段落格式工具栏
     blockBar=addToolBar("&Block");
+    blockBar->setObjectName("blockBar");
     blockBar->addActions(alignGroup->actions());
     blockBar->addWidget(listBox);
 }
@@ -384,6 +427,24 @@ QString MainWindow::textUnderCursor() const
     return tc.selectedText();
 }
 
+void MainWindow::saveSettings()
+{
+    QSettings settings("./settings.int",QSettings::IniFormat);
+    settings.beginGroup("mainWindow");
+    settings.setValue("geometry",saveGeometry());
+    settings.setValue("state",saveState());
+    settings.endGroup();
+}
+
+void MainWindow::loadSettings()
+{
+    QSettings settings("./settings.int",QSettings::IniFormat);
+    settings.beginGroup("mainWindow");
+    restoreGeometry(settings.value("geometry").toByteArray());
+    restoreState(settings.value("state").toByteArray());
+    settings.endGroup();
+}
+
 //设置段落对齐格式
 void MainWindow::setBlockAlign(QAction *aim)
 {
@@ -397,6 +458,28 @@ void MainWindow::setBlockAlign(QAction *aim)
         textEdit->setAlignment(Qt::AlignJustify);
 }
 
+void MainWindow::setTableHAlign(QAction *aim)
+{
+    QTextTable *curTable=textEdit->textCursor().currentTable();
+    if(curTable)
+    {
+        QTextTableFormat curFormat=curTable->format();
+        int flag=curFormat.alignment();
+        if(aim==tableLeftAlignAction)
+            curFormat.setAlignment(QFlags<Qt::AlignmentFlag>((int)Qt::AlignLeft|(0xFFF0&flag)));
+        else if(aim==tableRightAlignAction)
+            curFormat.setAlignment(QFlags<Qt::AlignmentFlag>((int)Qt::AlignRight|(0xFFF0&flag)));
+        else if(aim==tableHCenterAlignAction)
+            curFormat.setAlignment(QFlags<Qt::AlignmentFlag>((int)Qt::AlignHCenter|(0xFFF0&flag)));
+        else if(aim==tableJustifyAlignAction)
+            curFormat.setAlignment(QFlags<Qt::AlignmentFlag>((int)Qt::AlignJustify|(0xFFF0&flag)));
+        curTable->setFormat(curFormat);
+    }
+
+}
+
+
+
 void MainWindow::changeAlignAction()
 {
    Qt::Alignment align=textEdit->alignment();
@@ -407,6 +490,28 @@ void MainWindow::changeAlignAction()
    case Qt::AlignCenter:centerAlignAction->setChecked(true);break;
    case Qt::AlignJustify:justifyAlignAction->setChecked(true);break;
    }
+}
+
+void MainWindow::changeTableAlignAction()
+{
+    QTextTable *curTable=textEdit->textCursor().currentTable();
+    if(curTable)
+    {
+        tableHAlignGroup->setEnabled(true);
+        Qt::Alignment flag=curTable->format().alignment();
+        if(flag&Qt::AlignLeft)
+            tableLeftAlignAction->setChecked(true);
+        else if(flag&Qt::AlignRight)
+            tableRightAlignAction->setChecked(true);
+        else if(flag&Qt::AlignHCenter)
+            tableHCenterAlignAction->setChecked(true);
+        else if(flag&Qt::AlignJustify)
+            tableJustifyAlignAction->setChecked(true);
+    }
+    else
+    {
+        tableHAlignGroup->setEnabled(false);
+    }
 }
 
 //在鼠标位置变化时更新列表选项框
@@ -478,8 +583,20 @@ void MainWindow::insertImage()
 
 void MainWindow::insertTable()
 {
-    int column=insertTableDialog->column(),row=insertTableDialog->row();
+    int column=insertTableDialog->verticalNum(),row=insertTableDialog->horizontalNum();
     textEdit->textCursor().insertTable(row,column);
+}
+
+void MainWindow::setImageSize()
+{
+    QTextImageFormat curImg=textEdit->currentCharFormat().toImageFormat();
+    if(curImg.isValid())
+    {
+        curImg.setHeight(modifyImageDialog->verticalNum());
+        curImg.setWidth(modifyImageDialog->horizontalNum());
+        textEdit->setCurrentCharFormat(curImg);
+    }
+    return;
 }
 
 //覆盖事件
@@ -493,6 +610,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
             case QMessageBox::Save:
                 saveFile();
             case QMessageBox::Yes:
+                saveSettings();
                 event->accept();
                 break;
             default:
@@ -501,7 +619,10 @@ void MainWindow::closeEvent(QCloseEvent *event)
         }
     }
     else
+    {
+        saveSettings();
         event->accept();
+    }
 
 }
 

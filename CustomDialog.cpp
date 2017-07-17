@@ -104,7 +104,12 @@ bool FindDialog::backward()
     return backwardCheckBox->isChecked();
 }
 
-InsertTableDialog::InsertTableDialog(QWidget *parent):QDialog(parent)
+BiNumberDialog::BiNumberDialog(QWidget *parent):QDialog(parent)
+{
+
+}
+
+InsertTableDialog::InsertTableDialog(QWidget *parent):BiNumberDialog(parent)
 {
     //TODO 调整标签文字的字体和大小
     sizeLabel=new QLabel(tr("Table Size"),this);
@@ -141,6 +146,54 @@ InsertTableDialog::InsertTableDialog(QWidget *parent):QDialog(parent)
     setLayout(mainLayout);
 }
 
-int InsertTableDialog::column(){return columnBox->value();}
+int InsertTableDialog::verticalNum(){return columnBox->value();}
 
-int InsertTableDialog::row(){return rowBox->value();}
+int InsertTableDialog::horizontalNum(){return rowBox->value();}
+
+ModifyImageDialog::ModifyImageDialog(QWidget *parent):BiNumberDialog(parent)
+{
+    sizeLabel=new QLabel(tr("Image Size"),this);
+    sizeLabel->setFont(QFont("Times New Roman",15,75));
+
+    heightLabel=new QLabel(tr("&Height:"),this);
+    heightBox=new QSpinBox(this);
+    heightBox->setMinimum(1);
+    heightBox->setMaximum(1000);
+    heightLabel->setBuddy(heightBox);
+
+    widthLabel=new QLabel(tr("&Width:"),this);
+    widthBox=new QSpinBox(this);
+    widthBox->setMinimum(1);
+    widthBox->setMaximum(1000);
+    widthLabel->setBuddy(widthBox);
+
+    buttonBox=new QDialogButtonBox(QDialogButtonBox::Ok| QDialogButtonBox::Cancel,this);
+    connect(buttonBox,&QDialogButtonBox::accepted,this,&QDialog::accept);
+    connect(buttonBox,&QDialogButtonBox::rejected,this,&QDialog::hide);
+
+    QHBoxLayout *heightLayout=new QHBoxLayout;
+    heightLayout->addWidget(heightLabel);
+    heightLayout->addWidget(heightBox);
+
+    QHBoxLayout *widthLayout=new QHBoxLayout;
+    widthLayout->addWidget(widthLabel);
+    widthLayout->addWidget(widthBox);
+
+    QVBoxLayout *mainLayout=new QVBoxLayout;
+    mainLayout->addWidget(sizeLabel);
+    mainLayout->addLayout(heightLayout);
+    mainLayout->addLayout(widthLayout);
+    mainLayout->addWidget(buttonBox);
+
+    setLayout(mainLayout);
+}
+
+int ModifyImageDialog::verticalNum()
+{
+    return heightBox->value();
+}
+
+int ModifyImageDialog::horizontalNum()
+{
+    return widthBox->value();
+}

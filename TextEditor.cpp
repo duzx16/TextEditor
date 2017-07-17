@@ -35,6 +35,15 @@ void TextEditor::insertImage(QString filename)
     textCursor().insertImage(imageFormat);
 }
 
+void TextEditor::mergeCell()
+{
+    QTextTable *curTable=textCursor().currentTable();
+    if(curTable)
+    {
+        curTable->mergeCells(textCursor());
+    }
+}
+
 QCompleter *TextEditor::completer() const
 {
     return c;

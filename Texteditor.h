@@ -16,6 +16,8 @@ public:
 
     void setCompleter(QCompleter *c);
     void insertImage(QString filename);
+
+
     QCompleter *completer() const;
     ~TextEditor();
 protected slots:
@@ -24,6 +26,9 @@ protected slots:
     void setFontBold(bool checked);
     void setFontColor();
     void setList(int index);
+
+    //表格菜单的具体实现
+    void mergeCell();
 protected:
     //覆盖这两个时间以便于自动补全的实现
     void keyPressEvent(QKeyEvent *e) override;
